@@ -2,7 +2,7 @@
 
 <p align="center">
   <br>
-  <img src="./images/common/FlowBrick_logo.png">
+  <img src="./images/common/FlowBrick_logo_blue_v2.png">
   <br>
 </p>
 
@@ -31,7 +31,7 @@
 ####  -프로젝트 등록, 캘린더, 칸반보드
 
 ### 문해인
-#### 로그인, 회원관리, 부서관리, 채팅
+#### 로그인, 회원가입, 마이페이지, 관리자페이지 CRUD(회원관리, 부서관리)
 
 ### 박성중 [@psj1561](https://github.com/psj1561)
 #### 대시보드(메인화면), 공지사항, 파일 업로드/다운로드, 프로젝트 결재
