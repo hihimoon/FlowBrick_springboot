@@ -23,26 +23,25 @@
 <link href="${path}/a00_com/css/login.css" rel="stylesheet">
 <script src="${path}/a00_com/jquery.min.js"></script>
 <script src="${path}/a00_com/jquery-ui.js"></script>
+
 <script>
-$(document).ready(function() {
+	$(document).ready(function() {
 		var sessId = "${empResult.empno}"
 		if (sessId == "") {
 			alert("로그인을 하여야 현재화면을 볼 수 있습니다\n로그인 페이지 이동")
 			location.href = "${path}/login.do"
 		}
-		
-		$("#regBtn").click(function(event) {
-			 event.preventDefault();
+
+		$("#regBtn").click(function() {
+
 			$("#mypageFrm").submit();
 		})
-				
+
 		var msg = "${msg}"
-			if (msg != "") {
-				alert(msg) 
-			}
+		if (msg != "") {
+			alert(msg)
+		}
 	})
-	
-	
 </script>
 <script type="text/javascript">
 	
@@ -84,42 +83,49 @@ $(document).ready(function() {
 						<!-- DataTales Example -->
 						<div class="card shadow mb-4">
 							<div class="card-header py-3">
-								<label for="empno">사원번호</label> <input type="text"
-									id="empno"
+								<label for="empno">사원번호</label> <input type="text" id="empno"
 									class="h3 mb-2 text-gray-800 form-control form_c " name="empno"
 									value="${empInfo.empno}" readonly>
 							</div>
 							<div class="card-header py-3">
-								<label for="ename">이름</label> <input type="text"
-									id="ename"
+								<label for="ename">이름</label> <input type="text" id="ename"
 									class="h3 mb-2 text-gray-800 form-control form_c " name="ename"
 									value="${empInfo.ename}" readonly>
 							</div>
 
-							 <div class="card-header py-3">
-								<label for="dname">부서</label> <input type="text"
-									id="dname"
+							<div class="card-header py-3">
+								<label for="dname">부서</label> <input type="text" id="dname"
 									class="h3 mb-2 text-gray-800 form-control form_c " name="dname"
 									value="${empInfo.dname}" readonly>
 							</div>
- 
+
 							<div class="card-header py-3">
-								<label for="job">직급</label> <input type="text"
-									id="job" class="h3 mb-2 text-gray-800 form-control form_c"
-									name="job" value="${empInfo.job}" readonly>
+								<label for="job">직급</label> <input type="text" id="job"
+									class="h3 mb-2 text-gray-800 form-control form_c" name="job"
+									value="${empInfo.job}" readonly>
 							</div>
 
 							<div class="card-header py-3">
-								<label for="tel">휴대폰번호</label> <input type="text"
-									id="tel" class="h3 mb-2 text-gray-800 form-control form_c"
-									name="tel" value="${empInfo.tel}">
+								<label for="tel">휴대폰번호</label> <input type="text" id="tel"
+									class="h3 mb-2 text-gray-800 form-control form_c" name="tel"
+									value="${empInfo.tel}">
 							</div>
 
 
 							<div class="card-header py-3">
-								<label for="email">이메일</label> <input type="text"
-									id="email" class="h3 mb-2 text-gray-800 form-control form_c"
-									name="email" value="${empInfo.email}" readonly>
+								<label for="email">이메일</label> <input type="text" id="email"
+									class="h3 mb-2 text-gray-800 form-control form_c" name="email"
+									value="${empInfo.email}" readonly>
+							</div>
+
+							<div class="card-header py-3">
+								<label>비밀번호</label>
+								<div>
+									<a class="btn btn-danger" href="${path}/passwordChanges.do"><i
+										class="fas fa-lock"></i>비밀번호 변경</a>
+								</div>
+
+
 							</div>
 						</div>
 						<!-- 첨부파일 -->
@@ -149,7 +155,6 @@ $(document).ready(function() {
 							<div></div>
 
 							<div>
-
 
 								<a id="regBtn" class="btn btn-success btn-icon-split"> <span
 									class="icon text-white-50"> <i
@@ -183,8 +188,12 @@ $(document).ready(function() {
 
 		<!-- Scroll to Top Button-->
 		<a class="scroll-to-top rounded" href="#page-top"> <i
-			class="fas fa-angle-up"></i>
+			class="far fa-angle-up"></i>
 		</a>
+
+
+
+
 		<!-- Logout Modal-->
 		<%@ include file="inc/logout_modal.jsp"%>
 
@@ -199,12 +208,5 @@ $(document).ready(function() {
 
 		<!-- Custom scripts for all pages-->
 		<script src="${path}/a00_com/js/sb-admin-2.min.js"></script>
-
-		<!-- Page level plugins -->
-		<script src="${path}/a00_com/vendor/chart.js/Chart.min.js"></script>
-
-		<!-- Page level custom scripts -->
-		<script src="${path}/a00_com/js/demo/chart-area-demo.js"></script>
-		<script src="${path}/a00_com/js/demo/chart-pie-demo.js"></script>
 </body>
 </html>

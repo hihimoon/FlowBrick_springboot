@@ -28,20 +28,29 @@ public interface Dao_emp {
 	// 사원 리스트
 	List<Emp> empList(EmpSch sch);
 
-	// 사원번호 가져오기
+	// 채팅 사원 리스트
+	List<Emp> chatEmpList(Emp sch);
+
+	// 사원상세
 	Emp getEmp(int empno);
 
 	// 사원정보 수정
 	int empUpdate(Emp upt);
 
-	// 부서정보 삭제
+	// 부서정보 삭제시 사원정보 수정
+	int empUpdateByDeptDelete(int deptno);
+
+	// 사원정보 삭제
 	int empDelete(int empno);
 
 	// 마이페이지 회원정보 출력
 	EmpInfo getEmpInfo(int empno);
 
-	// 수정처리
+	// 마이페이지 수정처리
 	int updateEmpInfo(Emp upt);
+
+	// 비밀번호 변경
+	int updatePwd(Emp emp);
 
 	// 부서등록
 	int insertDept(Dept ins);
@@ -52,7 +61,7 @@ public interface Dao_emp {
 	// 부서 리스트
 	List<Dept> deptList(DeptSch sch);
 
-	// 부서번호 가져오기
+	// 부서상세
 	Dept getDept(int deptno);
 
 	// 부서정보 수정
@@ -63,9 +72,25 @@ public interface Dao_emp {
 
 	// 부서번호 중복검사
 	int checkDupDeptno(int deptno);
-	
+
 	// 직책 불러오기
 	@Select("SELECT DISTINCT job from fb_emp order by job")
 	List<String> getJobs();
+
+	// 권한 불러오기
+	@Select("SELECT DISTINCT auth from fb_emp order by auth")
+	List<String> getAuths();
+
+	// 이메일로 사원정보 가져오기 (회원가입시 메일발송 / 사원번호, 비밀번호찾기시 메일발송)
+	Emp getEmpByEmail(String email);
+
+	// 이메일로 사원번호 존재 여부 찾기
+	int checkEmpno(String email);
+
+	// 비밀번호 찾기
+	int forgotPwd(Emp emp);
+
+	// 임시비밀번호 저장
+	int updateTempPw(Emp upt);
 
 }

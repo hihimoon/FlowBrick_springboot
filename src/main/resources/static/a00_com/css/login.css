@@ -1,3 +1,10 @@
+/* input 화살표 제거 */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .forgot p{
 font-size: .8rem;
 	
@@ -53,4 +60,23 @@ font-size: .8rem;
 
 .card-header{
 	border-bottom: 0;
+}
+
+.table td{
+	text-align: center;
+}
+
+#selectLan{
+	width: 50%;
+	margin-left: 50%;
+	margin-bottom: 6%;
+	font-size: .8rem;
+}
+
+.fas{
+	margin-right:6%;
+}
+
+#mypageFrm .btn-danger{
+	width: 15%;
 }

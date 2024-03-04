@@ -12,6 +12,7 @@ public class Wizet_PrjList {
 	private String prjStep;
 	private String teamName;
 	private long diff; // 종료일-오늘날짜 저장변수
+	private int risk;
 	
 	
 	public Wizet_PrjList() {
@@ -19,7 +20,7 @@ public class Wizet_PrjList {
 	}
 
 	public Wizet_PrjList(int prjNo, String prjName, int prjPriority, Date prjAcceptDate, Date prjBegin, Date prjEnd,
-			String prjStep, String teamName, long diff) {
+			String prjStep, String teamName, long diff, int risk) {
 		super();
 		this.prjNo = prjNo;
 		this.prjName = prjName;
@@ -30,6 +31,7 @@ public class Wizet_PrjList {
 		this.prjStep = prjStep;
 		this.teamName = teamName;
 		this.diff = diff;
+		this.risk = risk;
 	}
 
 	public int getPrjNo() {
@@ -103,6 +105,12 @@ public class Wizet_PrjList {
 	public void setDiff(long diff) {
 		this.diff = diff;
 	}
-	
-	
+
+	public int getRisk() {
+		return risk;
+	}
+
+	public void setRisk(int risk) {
+		this.risk = risk;
+	}
 }

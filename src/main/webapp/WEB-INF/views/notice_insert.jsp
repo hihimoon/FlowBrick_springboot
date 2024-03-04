@@ -20,29 +20,49 @@
     <link href="${path}/a00_com/css/sb-admin-2.min.css" rel="stylesheet">
     
 <style type="text/css">
-.input-file-button {
-	padding: 6px 25px;
-	background-color: #FF6600;
-	border-radius: 4px;
-	color: white;
-	cursor: pointer;
-}
-.fileform{
-	display: none;
-}
+        .custom-file-input {
+            display: inline-block;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #495057;
+            padding: .375rem .75rem;
+            border: 1px solid #ced4da;
+            border-radius: .25rem;
+            transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        }
 
-input[type=file]::file-selector-button {
-  width: 100px;
-  height: 30px;
-  background: #fff;
-  border: 1px solid rgb(77,77,77);
-  border-radius: 10px;
-  cursor: pointer;
-  &:hover {
-    background: rgb(77,77,77);
-    color: #fff;
-  }
-}
+        .custom-file-input:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 .2rem rgba(0,123,255,.25);
+        }
+
+        .custom-file-label {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        /* 숨겨진 기본 파일 업로드 버튼 */
+        .custom-file-input[type=file] {
+            visibility: hidden;
+            width: 0;
+        }
+
+        /* 대체된 파일 업로드 버튼 스타일링 */
+        .custom-file-label::after {
+            content: '찾아보기';
+        }
+
+        .custom-file-input[type=file]:not(:disabled) ~ .custom-file-label::after {
+            cursor: pointer;
+        }
+
+        /* 선택된 파일명 스타일링 */
+        .custom-file-input[aria-describedby][multiple]:not(:last-child) ~ .custom-file-label::after {
+            content: ', ';
+        }
 
 #chatArea {
 	width: 98%;
@@ -52,11 +72,6 @@ input[type=file]::file-selector-button {
 	text-align: left;
 	border: 0.5px solid green;
 	font-size: 20px;
-}
-
-.img_file{
-	width: 40px;
-	height: 45px;
 }
 
 .form_c{
@@ -143,19 +158,49 @@ input[type=file]::file-selector-button {
 							<h6 class="form_c m-0 font-weight-bold text-primary">첨부파일</h6>
 						</div>
 						<div class="card-body d-sm-flex">
-							<img class="img_file" src="${path}/a00_com/img/file_icon.png">&nbsp&nbsp
-							  
-							<input id="input-file" type="file" class="h3 mb-2 text-gray-800 form-control form_c bg-light"
-									aria-label="Search" aria-describedby="basic-addon2" name="reports"
-									multiple/>
-							<!--
-							<div class="input-group mb-3">
-								<input id="input-file" type="file" name="reports"
-									multiple />
-							</div>
-							-->	
+						
+								<div class="custom-file">
+									<input type="file" name="reports" class="custom-file-input" id="customFile"
+										multiple onchange="displayFileNames()"> 
+									<label class="custom-file-label" for="customFile">
+										파일을 선택하세요</label>
+								</div>							
 						</div>
+						<script type="text/javascript">
+						function displayFileNames() { // 업로드한 파일을 선택했을때 표시하는 함수
+						    const input = document.getElementById('customFile');
+						    const label = document.querySelector('.custom-file-label');
+						    const files = input.files;
+
+						    if (files.length > 0) {
+						    	label.innerHTML = " "
+						        let fileDetails = ""; // 각 파일의 파일명과 크기를 저장할 문자열 변수
+
+						        Array.from(files).forEach(file => {
+						            const fileSize = formatFileSize(file.size); // 파일 크기를 사람이 읽기 쉬운 형식으로 변환
+						            fileDetails += file.name + " [" + fileSize + "], "; // 파일명과 크기를 추가
+						        });
+
+						        // 마지막 쉼표 제거 후 레이블에 파일명과 크기 표시
+						        label.innerHTML += "<span role='button'> " + fileDetails.slice(0, -2) + " </span>";
+						    }
+						}
+						
+						function formatFileSize(sizeInBytes) {
+						    const kilobyte = 1024;
+						    const megabyte = kilobyte * 1024;
+
+						    if (sizeInBytes > megabyte) {
+						        return (sizeInBytes / megabyte).toFixed(2) + ' MB';
+						    } else if (sizeInBytes > kilobyte) {
+						        return (sizeInBytes / kilobyte).toFixed(2) + ' KB';
+						    } else {
+						        return sizeInBytes + ' bytes';
+						    }
+						}
+					    </script>						
 					</div>
+					
 					<!-- 버튼 div -->
 					<div class="my-2"></div>
 						<div class="d-sm-flex justify-content-between">
@@ -183,15 +228,7 @@ input[type=file]::file-selector-button {
 			</div>
 			<!-- End of Main Content -->
 
-			<!-- Footer -->
-			<footer class="sticky-footer bg-white">
-				<div class="container my-auto">
-					<div class="copyright text-center my-auto">
-						<span>Copyright &copy; Your Website 2021</span>
-					</div>
-				</div>
-			</footer>
-			<!-- End of Footer -->
+
 
 		</div>
 		<!-- End of Content Wrapper -->
@@ -218,8 +255,5 @@ input[type=file]::file-selector-button {
 <!-- Page level plugins -->
 <script src="${path}/a00_com/vendor/chart.js/Chart.min.js"></script>
 
-<!-- Page level custom scripts -->
-<script src="${path}/a00_com/js/demo/chart-area-demo.js"></script>
-<script src="${path}/a00_com/js/demo/chart-pie-demo.js"></script>	
 </body>
 </html>

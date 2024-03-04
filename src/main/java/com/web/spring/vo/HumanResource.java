@@ -3,7 +3,7 @@ package com.web.spring.vo;
 public class HumanResource {
 	
 	private String tel;
-	private int prjNo;
+	private long prjNo;
 	private int deptno;
 	private int empno;
 	private int sal;
@@ -14,10 +14,10 @@ public class HumanResource {
 	public void setTel(String tel) {
 		this.tel = tel;
 	}
-	public int getPrjNo() {
+	public long getPrjNo() {
 		return prjNo;
 	}
-	public void setPrjNo(int prjNo) {
+	public void setPrjNo(long prjNo) {
 		this.prjNo = prjNo;
 	}
 	public int getDeptno() {
@@ -38,7 +38,8 @@ public class HumanResource {
 	public void setSal(int sal) {
 		this.sal = sal;
 	}
-	public HumanResource(String tel, int prjNo, int deptno, int empno, int sal) {
+	public HumanResource(String tel, long prjNo, int deptno, int empno, int sal) {
+		super();
 		this.tel = tel;
 		this.prjNo = prjNo;
 		this.deptno = deptno;
@@ -46,8 +47,9 @@ public class HumanResource {
 		this.sal = sal;
 	}
 	public HumanResource() {
-		
+		super();
 	}
+	
 	
 	
 

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.spring.dao.Dao_chatting">
+
+
+	<select id="chatEmpList" parameterType="emp" resultType="emp">
+		SELECT *
+		from FB_emp e
+		INNER JOIN fb_dept d ON e.deptno = d.deptno
+		and ename like
+		'%'||#{ename}||'%'
+		order by ename
+	</select>
+
+
+	<insert id="insertChatRoom" parameterType="chattingRoom">
+		INSERT INTO
+		CHATTING_ROOM(ROOMNAME,CHATUSERID) VALUES (#{roomname},#{chatuserid})
+	</insert>
+
+
+
+<!-- 	<select id="chatRoomList" parameterType="String" resultType="String">
+		SELECT DISTINCT roomname FROM chatting_room where roomname like '%'||#{roomname}||'%'
+	</select>
+	 -->
+	
+	<select id="chatRoomList" parameterType="String" resultType="String">
+		SELECT DISTINCT roomname FROM chatting_room
+	</select>
+	
+
+	<!-- 채팅방 접속자 id 리스트 출력  -->
+	<select id="getEmpnoByRoom" parameterType="String" resultType="String">
+		SELECT chatuserid FROM chatting_room where roomname=#{roomname}
+	</select>
+	
+	
+	<!-- 특정 사용자가 속한 채팅방의 모든 사용자 리스트 출력 -->
+	<select id="getUsersInChatRoom" parameterType="String" resultType="String">
+		SELECT chatuserid FROM chatting_room WHERE roomname = (SELECT roomname FROM chatting_room WHERE chatuserid=#{chatuserid})
+	</select>
+	
+	<!-- 채팅방 나가기 -->
+	<delete id="delChatRoom" parameterType="String">
+		SELECT chatuserid FROM chatting_room WHERE roomname = #{roomname}
+	</delete>
+	
+
+</mapper>	

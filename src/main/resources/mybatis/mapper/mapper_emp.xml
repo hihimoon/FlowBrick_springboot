@@ -4,99 +4,122 @@
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.web.spring.dao.Dao_emp">
 
+	<!-- 로그인 -->
 	<select id="login" resultType="emp" parameterType="emp">
 		SELECT * FROM
 		FB_EMP WHERE empno=#{empno} AND password=#{password}
 	</select>
 
-	<insert id="signUp"  parameterType="emp">
-		INSERT INTO FB_EMP(empno, ename, email, deptno, job) VALUES (emp_seq.nextval, #{ename},#{email},#{deptno}, #{job} )
+	<insert id="signUp" parameterType="emp">
+		INSERT INTO FB_EMP(empno, ename, email, deptno, job, password, auth)
+		VALUES (emp_seq.nextval, #{ename}, #{email}, #{deptno}, #{job}, #{password},
+		#{auth})
 	</insert>
 
 
 	<select id="getEmpInfo" resultType="empInfo" parameterType="int">
 		SELECT empno, ename, dname, job, tel, email
-		FROM FB_EMP e left join FB_dept d
+		FROM FB_EMP e left join
+		FB_dept d
 		on e.deptno=d.deptno where empno=#{empno}
 	</select>
-	
-	
+
+
 	<update id="updateEmpInfo" parameterType="emp">
-		UPDATE FB_EMP set tel=#{tel} where empno = #{empno}
+		UPDATE FB_EMP set
+		tel=#{tel} where empno = #{empno}
+	</update>
+
+	<!-- 비밀번호 변경 -->
+	<update id="updatePwd" parameterType="emp">
+		UPDATE FB_EMP set
+		PASSWORD=#{password} where empno = #{empno}
 	</update>
 
 	<insert id="insertDept" parameterType="dept">
-		INSERT INTO FB_dept(deptno, dname) VALUES (#{deptno},#{dname})
+		INSERT INTO
+		FB_dept(deptno, dname) VALUES (#{deptno},#{dname})
 	</insert>
 
 	<select id="totDept" resultType="int" parameterType="deptSch">
-		SELECT COUNT(*)
+		SELECT
+		COUNT(*)
 		FROM FB_dept
 		WHERE 1=1
 		AND dname LIKE '%'||#{dname}||'%'
 	</select>
-	
+
 	<select id="deptList" parameterType="deptSch" resultType="dept">
-		select * 
+		select
+		*
 		from (
-			select rownum cnt, d.*
-			from FB_dept d
-			where 1=1
-			and dname like '%'||#{dname}||'%'
-			order by deptno
+		select rownum cnt, d.*
+		from FB_dept d
+		where 1=1
+		and dname like
+		'%'||#{dname}||'%'
+		order by deptno
 		)
-		where cnt BETWEEN #{start} AND #{end}
+		where cnt BETWEEN #{start} AND
+		#{end}
 	</select>
-	
-	
+
+
 	<select id="getDept" parameterType="int" resultType="dept">
-		SELECT * FROM FB_dept WHERE deptno = #{deptno}
+		SELECT *
+		FROM FB_dept WHERE deptno = #{deptno}
 	</select>
-	
+
 	<update id="deptUpdate" parameterType="dept">
 		update FB_dept
 		set
 		dname=#{dname}
 		where deptno = #{deptno}
 	</update>
-	
+
 	<delete id="deptDelete" parameterType="int">
 		delete
 		from FB_dept
-		where deptno = #{deptno}
+		where
+		deptno = #{deptno}
 	</delete>
-	
-		
+
+
 	<select id="checkDupDeptno" parameterType="int" resultType="int">
 		SELECT count(*) FROM FB_dept WHERE deptno = #{deptno}
 	</select>
 
-	
+
 	<select id="totEmp" resultType="int" parameterType="empSch">
-		SELECT COUNT(*)
+		SELECT
+		COUNT(*)
 		FROM FB_emp
 		WHERE 1=1
 		AND ename LIKE '%'||#{ename}||'%'
 	</select>
-	
+
 	<select id="empList" parameterType="empSch" resultType="emp">
 		SELECT *
-		FROM ( 
-			select rownum cnt, e.* 
-			from (
-				SELECT e.*, d.DNAME 
-				from FB_emp e
-				INNER JOIN fb_dept d ON e.deptno = d.deptno
-				and ename like '%'||#{ename}||'%'
-				order by empno
-			) e
+		FROM (
+		SELECT rownum cnt, e.*
+		FROM (
+		SELECT e.*, d.DNAME
+		FROM FB_emp e
+		LEFT OUTER JOIN fb_dept d ON e.deptno = d.deptno
+		WHERE ename LIKE '%' || #{ename} || '%'
+		ORDER BY empno
+		) e
 		)
-		where cnt BETWEEN #{start} AND#{end}
+		WHERE cnt BETWEEN #{start} AND #{end}
 	</select>
+
+
+
 	<select id="getEmp" parameterType="int" resultType="emp">
-		SELECT * FROM FB_emp WHERE empno = #{empno}
+		SELECT * FROM
+		FB_emp WHERE empno = #{empno}
 	</select>
-	
+
 	<update id="empUpdate" parameterType="emp">
 		update FB_emp
 		set
@@ -104,18 +127,51 @@
 		deptno=#{deptno},
 		job=#{job},
 		tel=#{tel},
-		email=#{email}
+		auth=#{auth}
 		where empno = #{empno}
 	</update>
-	
+
+	<update id="empUpdateByDeptDelete" parameterType="int">
+		update FB_emp
+		set
+		deptno=null
+		where deptno = #{deptno}
+	</update>
+
 	<delete id="empDelete" parameterType="int">
 		delete
 		from FB_emp
-		where empno = #{empno}
+		where
+		empno = #{empno}
 	</delete>
-	
-	
-	
-	
-	
+
+
+	<!-- 이메일로 사원번호 존재 여부 찾기 -->
+	<select id="checkEmpno" parameterType="string" resultType="int">
+		SELECT count(empno) FROM
+		FB_emp WHERE email=#{email}
+	</select>
+
+
+	<!-- 이메일로 사원정보 가져오기 (회원가입시 메일발송 / 사원번호,비밀번호 찾기시 메일발송) -->
+	<select id="getEmpByEmail" parameterType="string"
+		resultType="emp">
+		SELECT * FROM
+		FB_emp WHERE email=#{email}
+	</select>
+
+	<!-- 비밀번호 찾기 -->
+	<select id="forgotPwd" parameterType="emp" resultType="int">
+		SELECT
+		count(empno) FROM
+		FB_emp WHERE empno=#{empno} and email=#{email}
+	</select>
+
+
+	<update id="updateTempPw" parameterType="emp">
+		update FB_emp set
+		password=#{password}
+		where empno = #{empno} AND email=#{email}
+	</update>
+
 </mapper>	

@@ -5,7 +5,7 @@ public class MaterialResource {
 	
 	
 	private int materialresourceno; //물적자원번호
-	private int prjNo; //프로젝트번호
+	private long prjNo; //프로젝트번호
 	private String prjname; //프로젝트이름
 	private int rentorbuy; //임대or구매여부
 	private int price; //비용
@@ -14,17 +14,25 @@ public class MaterialResource {
 	private String facilityloc; //시설위치
 	private int division; //시설or물건구분
 	
+	
 	public void showAll() {
-		System.out.println(materialresourceno);
-		System.out.println(prjNo);
-		System.out.println(prjname);
-		System.out.println(rentorbuy);
-		System.out.println(price);
-		System.out.println(materialresourcename);
-		System.out.println(productcnt);
-		System.out.println(facilityloc);
-		System.out.println(division);
+		System.out.println("\n");
+		
+		System.out.println("materialresourceno : "+this.materialresourceno);
+		System.out.println("prjNo : "+this.prjNo);
+		System.out.println("prjname : "+this.prjname);
+		System.out.println("rentorbuy : "+this.rentorbuy);
+		System.out.println("price : "+this.price);
+		System.out.println("materialresourcename : "+this.materialresourcename);
+		System.out.println("productcnt : "+this.productcnt);
+		System.out.println("facilityloc : "+this.facilityloc);
+		System.out.println("division : "+this.division);
+
+		
+		System.out.println("\n");
+		
 	}
+	
 	
 	public int getMaterialresourceno() {
 		return materialresourceno;
@@ -32,10 +40,10 @@ public class MaterialResource {
 	public void setMaterialresourceno(int materialresourceno) {
 		this.materialresourceno = materialresourceno;
 	}
-	public int getPrjNo() {
+	public long getPrjNo() {
 		return prjNo;
 	}
-	public void setPrjNo(int prjNo) {
+	public void setPrjNo(long prjNo) {
 		this.prjNo = prjNo;
 	}
 	public String getPrjname() {
@@ -80,8 +88,9 @@ public class MaterialResource {
 	public void setDivision(int division) {
 		this.division = division;
 	}
-	public MaterialResource(int materialresourceno, int prjNo, String prjname, int rentorbuy, int price,
+	public MaterialResource(int materialresourceno, long prjNo, String prjname, int rentorbuy, int price,
 			String materialresourcename, int productcnt, String facilityloc, int division) {
+		super();
 		this.materialresourceno = materialresourceno;
 		this.prjNo = prjNo;
 		this.prjname = prjname;
@@ -93,7 +102,7 @@ public class MaterialResource {
 		this.division = division;
 	}
 	public MaterialResource() {
-		
+		super();
 	}
 	
 	

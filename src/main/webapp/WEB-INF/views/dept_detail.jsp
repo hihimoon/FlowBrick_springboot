@@ -8,7 +8,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>noticeList</title>
+<title>deptDetail</title>
 
 <!-- Custom fonts for this template-->
 <link href="${path}/a00_com/vendor/fontawesome-free/css/all.min.css"
@@ -114,6 +114,10 @@ td {
 				<!-- Begin Page Content -->
 				<div class="container-fluid">
 
+					<!-- Page Heading -->
+					<h1 class="h3 mb-2 text-gray-800">부서관리</h1>
+					<p class="mb-4">부서 상세입니다.</p>
+
 					<!-- DataTales Example -->
 					<div class="container">
 						<form method="post">
@@ -142,13 +146,16 @@ td {
 								<div></div>
 
 								<div>
-									<a id="uptBtn" class="btn btn-info btn-icon-split"> <span
-										class="icon text-white-50"> <i
-											class="fas fa-arrow-right"></i>
-									</span> <span class="text">수정하기</span>
-									</a> <a id="delBtn" class="btn btn-danger btn-icon-split"> <span
-										class="icon text-white-50"> <i class="fas fa-trash"></i>
-									</span> <span class="text">삭제하기</span>
+									<c:if test="${empResult.auth == '인사관리자'}">
+										<a id="uptBtn" class="btn btn-info btn-icon-split"> <span
+											class="icon text-white-50"> <i
+												class="fas fa-arrow-right"></i>
+										</span> <span class="text">수정하기</span>
+										</a>
+										<a id="delBtn" class="btn btn-danger btn-icon-split"> <span
+											class="icon text-white-50"> <i class="fas fa-trash"></i>
+										</span> <span class="text">삭제하기</span>
+									</c:if>
 									</a> <a id="mainBtn" href="${path}/deptList.do"
 										class="btn btn-secondary btn-icon-split"> <span
 										class="icon text-white-50"> <i

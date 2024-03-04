@@ -4,10 +4,8 @@ public class DataBetweenMrAndRep {
 	
 	private int cntInputRepToMr;
 	private int repno;
-	private int prjNo;
+	private long prjNo;
 	private String prjname;
-	
-	
 	public int getCntInputRepToMr() {
 		return cntInputRepToMr;
 	}
@@ -20,10 +18,10 @@ public class DataBetweenMrAndRep {
 	public void setRepno(int repno) {
 		this.repno = repno;
 	}
-	public int getPrjNo() {
+	public long getPrjNo() {
 		return prjNo;
 	}
-	public void setPrjNo(int prjNo) {
+	public void setPrjNo(long prjNo) {
 		this.prjNo = prjNo;
 	}
 	public String getPrjname() {
@@ -32,7 +30,7 @@ public class DataBetweenMrAndRep {
 	public void setPrjname(String prjname) {
 		this.prjname = prjname;
 	}
-	public DataBetweenMrAndRep(int cntInputRepToMr, int repno, int prjNo, String prjname) {
+	public DataBetweenMrAndRep(int cntInputRepToMr, int repno, long prjNo, String prjname) {
 		super();
 		this.cntInputRepToMr = cntInputRepToMr;
 		this.repno = repno;
@@ -42,6 +40,8 @@ public class DataBetweenMrAndRep {
 	public DataBetweenMrAndRep() {
 		super();
 	}
+	
+	
 	
 	
 }

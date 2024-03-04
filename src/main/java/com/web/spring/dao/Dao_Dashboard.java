@@ -49,4 +49,25 @@ public interface Dao_Dashboard {
 			+ "	AND tm.EMPNO = #{empno}")
 	List<Wizet_PrjList> getPrjList(int empno);
 	
+	// 로그인한 사원의 프로젝트 물적자산 금액
+	@Select("SELECT NVL(SUM(price * PRODUCTCNT), 0)\r\n"
+			+ "FROM(\r\n"
+			+ "	SELECT DISTINCT mr.*\r\n"
+			+ "	FROM  MATERIALRESOURCE mr,  PROJECTBASIC pb, PROJECTTEAM pt , TEAMMATE tm\r\n"
+			+ "	WHERE 1=1\r\n"
+			+ "	AND mr.PRJNO = pb.PRJNO\r\n"
+			+ "	AND pb.prjno = pt.PRJNO\r\n"
+			+ "	AND pt.TEAMNO = tm.TEAMNO\r\n"
+			+ "	AND tm.EMPNO = #{empno})")
+	int getProjM(int empno);
+
+	// 로그인한 사원의 프로젝트 인적자산 금액
+	@Select("SELECT NVL(SUM(sal),0)\r\n"
+			+ "	FROM HUMANRESOURCE h, PROJECTBASIC pb, PROJECTTEAM pt , TEAMMATE tm\r\n"
+			+ "	WHERE 1=1\r\n"
+			+ "	AND h.prjno = pb.PRJNO\r\n"
+			+ "	AND pb.prjno = pt.PRJNO\r\n"
+			+ "	AND pt.TEAMNO = tm.TEAMNO\r\n"
+			+ "	AND tm.EMPNO = #{empno}")
+	int getProjH(int empno);
 }

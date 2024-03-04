@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.web.spring.service.WebService_notice;
 import com.web.spring.vo.Notice;
+import com.web.spring.vo.NoticeFile;
 import com.web.spring.vo.NoticeSch;
 import com.web.spring.vo.Wizet_PrjList;
 
@@ -61,6 +62,7 @@ public class WebController_notice {
 	@RequestMapping("detailNotice.do")
 	public String getBoard(@RequestParam("no") int no, Model d) {
 		d.addAttribute("notice", service.getDetailNotice(no));
+		//d.addAttribute("notice_file", service.getNoticeFiles(no));
 		return "notice_detail";
 	}
 	// 수정 페이지로 이동
@@ -77,15 +79,26 @@ public class WebController_notice {
 		d.addAttribute("msg", service.updateNotice(upt));
 		System.out.println("수정처리끝");
 		// 수정이후, 데이터
-		d.addAttribute("board", service.getNotice(upt.getNo()));
+		d.addAttribute("notice", service.getNotice(upt.getNo()));
 		return "notice_detail";
-	}	
+	}
+	// 파일만삭제
+	@RequestMapping("deleteFile.do")
+	public String deleteFile(NoticeFile del, Model d) {
+		System.out.println(del.getFname()+"을 삭제합니다.");
+		d.addAttribute("msg", service.deleteFile(del));
+		System.out.println("파일삭제끝");
+		d.addAttribute("notice", service.getDetailNotice(del.getNo()));
+		return "notice_update";
+	}
+	
 	// 삭제 처리
 	@RequestMapping("deleteNotice.do")
 	public String deleteNotice(@RequestParam("no") int no, Model d) {
 		d.addAttribute("proc","del");
 		
 		d.addAttribute("msg", service.deleteNotice(no));
+		
 		return "notice_detail";
 	}
 	// 다운로드

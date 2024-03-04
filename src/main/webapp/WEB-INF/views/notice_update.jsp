@@ -5,7 +5,7 @@
 <c:set var="path" value="${pageContext.request.contextPath }" />
 <fmt:requestEncoding value="utf-8" />
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <title>noticeList</title>
@@ -19,31 +19,51 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400&display=swap" rel="stylesheet">
 <!-- Custom styles for this template-->
 <link href="${path}/a00_com/css/sb-admin-2.min.css" rel="stylesheet">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style type="text/css">
-.input-file-button {
-	padding: 6px 25px;
-	background-color: #FF6600;
-	border-radius: 4px;
-	color: white;
-	cursor: pointer;
-}
-.fileform{
-	display: none;
-}
+        .custom-file-input {
+            display: inline-block;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #495057;
+            padding: .375rem .75rem;
+            border: 1px solid #ced4da;
+            border-radius: .25rem;
+            transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        }
 
-input[type=file]::file-selector-button {
-  width: 100px;
-  height: 30px;
-  background: #fff;
-  border: 1px solid rgb(77,77,77);
-  border-radius: 10px;
-  cursor: pointer;
-  &:hover {
-    background: rgb(77,77,77);
-    color: #fff;
-  }
-}
+        .custom-file-input:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 .2rem rgba(0,123,255,.25);
+        }
+
+        .custom-file-label {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        /* 숨겨진 기본 파일 업로드 버튼 */
+        .custom-file-input[type=file] {
+            visibility: hidden;
+            width: 0;
+        }
+
+        /* 대체된 파일 업로드 버튼 스타일링 */
+        .custom-file-label::after {
+            content: '찾아보기';
+        }
+
+        .custom-file-input[type=file]:not(:disabled) ~ .custom-file-label::after {
+            cursor: pointer;
+        }
+
+        /* 선택된 파일명 스타일링 */
+        .custom-file-input[aria-describedby][multiple]:not(:last-child) ~ .custom-file-label::after {
+            content: ', ';
+        }
 
 #chatArea {
 	width: 98%;
@@ -53,11 +73,6 @@ input[type=file]::file-selector-button {
 	text-align: left;
 	border: 0.5px solid green;
 	font-size: 20px;
-}
-
-.img_file{
-	width: 40px;
-	height: 45px;
 }
 
 .form_c{
@@ -76,14 +91,21 @@ input[type=file]::file-selector-button {
 			alert("로그인을 하여야 현재화면을 볼 수 있습니다\n로그인 페이지 이동")
 			location.href = "${path}/login.do"
 		}
-	$(document).ready(function() {		
+	$(document).ready(function() {
+        const label_tmp = document.querySelector('.custom-file-label');
+        
+        var fnamesString = "${notice.fnames}";
+        var fnamesList = fnamesString.split(',');
+		
 		$("#uptBtn").click(function(){
 			if(confirm("수정하시겠습니까?")){
 				$("form").attr("action","${path}/updateNotice.do")
 				$("form").submit()
 			}  		 
 		})
+		
 	});
+
 </script>
 </head>
 <body id="page-top">
@@ -107,7 +129,7 @@ input[type=file]::file-selector-button {
 
 				<!-- Begin Page Content -->
 				<div class="container-fluid">
-				<form method="post">
+				<form method="post" enctype="multipart/form-data">
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
@@ -138,16 +160,61 @@ input[type=file]::file-selector-button {
 							<h6 class="form_c m-0 font-weight-bold text-primary">첨부파일</h6>
 						</div>
 						<div class="card-body d-sm-flex">
-							<img class="img_file" src="${path}/a00_com/img/file_icon.png">&nbsp&nbsp
-							<!--   
-							<input id="input-file" type="file" class="h3 mb-2 text-gray-800 form-control form_c bg-light"
-									aria-label="Search" aria-describedby="basic-addon2" name="reports"
-									multiple/>
-							 -->
-							<c:forEach var="fname" items="${notice.fnames}">					
-								<span ondblclick="del_file('${fname}')" >${fname}</span>	
-							</c:forEach>	
+								<div class="custom-file">
+									<input type="file" name="reports" class="custom-file-input" id="customFile"
+										multiple onchange="displayFileNames()"> 
+									<label
+										class="custom-file-label" for="customFile">
+										<c:choose>
+											<c:when test="${empty notice.fnames}">파일을 선택하세요</c:when>
+											<c:otherwise>
+												<c:forEach var="fname" items="${notice.fnames}">
+													<span calss="font weight-bold" role="button">${fname} </span>
+													<i role="button" class="fa fa-remove text-danger" onclick="removeFile('${fname}')"></i>
+												</c:forEach>
+											</c:otherwise>
+										</c:choose>
+									</label>
+								</div>				
 						</div>
+						<script type="text/javascript">
+						function displayFileNames() { // 업로드한 파일을 선택했을때 표시하는 함수
+						    const input = document.getElementById('customFile');
+						    const label = document.querySelector('.custom-file-label');
+						    const files = input.files;
+
+						    if (files.length > 0) {
+						    	label.innerHTML += ", "
+						        let fileDetails = ""; // 각 파일의 파일명과 크기를 저장할 문자열 변수
+
+						        Array.from(files).forEach(file => {
+						            const fileSize = formatFileSize(file.size); // 파일 크기를 사람이 읽기 쉬운 형식으로 변환
+						            fileDetails += file.name + " [" + fileSize + "], "; // 파일명과 크기를 추가
+						        });
+
+						        // 마지막 쉼표 제거 후 레이블에 파일명과 크기 표시
+						        label.innerHTML = "<span role='button'> " + fileDetails.slice(0, -2) + " </span>";
+						    }
+						}
+						
+						function formatFileSize(sizeInBytes) {
+						    const kilobyte = 1024;
+						    const megabyte = kilobyte * 1024;
+
+						    if (sizeInBytes > megabyte) {
+						        return (sizeInBytes / megabyte).toFixed(2) + ' MB';
+						    } else if (sizeInBytes > kilobyte) {
+						        return (sizeInBytes / kilobyte).toFixed(2) + ' KB';
+						    } else {
+						        return sizeInBytes + ' bytes';
+						    }
+						}
+					    function removeFile(fname) {
+					    	if(confirm(fname+"을 삭제하시겠습니까?")){
+					    		location.href="${path}/deleteFile.do?fname="+fname+"&no="+${notice.no}
+					    	}		   		
+						}
+					    </script>
 					</div>
 					<!-- 버튼 div -->
 					<div class="my-2"></div>
@@ -210,8 +277,5 @@ input[type=file]::file-selector-button {
 <!-- Page level plugins -->
 <script src="${path}/a00_com/vendor/chart.js/Chart.min.js"></script>
 
-<!-- Page level custom scripts -->
-<script src="${path}/a00_com/js/demo/chart-area-demo.js"></script>
-<script src="${path}/a00_com/js/demo/chart-pie-demo.js"></script>	
 </body>
 </html>

@@ -23,6 +23,8 @@
 
 <script src="${path}/a00_com/jquery.min.js"></script>
 <script src="${path}/a00_com/jquery-ui.js"></script>
+<script src="https://unpkg.com/vue" type="text/javascript"></script>
+<script src="https://unpkg.com/axios" type="text/javascript" ></script>
 <script>
 	window.onload = function(){
 		var sessId = "${empResult.empno}"
@@ -84,8 +86,10 @@
 		$("#notice").click(function(){
 			location.href="${path}/notice.do"
 		})
+		
 	});
 </script>
+
 </head>
 <body id="page-top">
 

@@ -19,26 +19,15 @@
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="${path}/a00_com/css/sb-admin-2.min.css" rel="stylesheet">
- 
-<style type="text/css">
-	.input-group-text{width:100%;background-color:linen;
-		color:black;font-weight:bolder;}
-	.input-group-prepend{width:20%;}
-	#chatArea{
-		width:80%;height:200px;overflow-y:auto;text-align:left;
-		border:1px solid green;
-	}
-	.jumbotron{padding:2%;}	
-</style>
-
-
+<link href="${path}/a00_com/css/sb-admin-2.min.css" rel="stylesheet">
 <script src="${path}/a00_com/jquery.min.js"></script>
 <script src="${path}/a00_com/popper.min.js"></script>
 <script src="${path}/a00_com/bootstrap.min.js"></script>
 <script src="${path}/a00_com/jquery-ui.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://developers.google.com/web/ilt/pwa/working-with-the-fetch-api" type="text/javascript"></script>
+
+
 <script type="text/javascript">
 
 	$(document).ready(function(){
@@ -50,6 +39,10 @@
 		$("#mrsclabel").click(function(){
 			location.href="${path}/MRList.do?prjNo="+${prjNo}+"&prjname="+"${prjname}";//
 		})		
+	
+
+		
+		
 	})
 
 </script>
@@ -95,9 +88,11 @@
 
 
 
+
 <div class="container">
 	<label for="hrimg" id="hrsclabel">인적자원
-	<img src="https://t1.daumcdn.net/cfile/tistory/190C4D414FAB635520" id="hrimg" width="500" length="500"/></label>
+	<img src="https://t1.daumcdn.net/cfile/tistory/190C4D414FAB635520" 
+	id="hrimg" width="500" length="500"/></label>
 	
 	<label for="mrimg" id="mrsclabel">물적자원
 	<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDCGTh4Wp4CKbCY3UWNaCT5LDuI6pR-1Qe8A&usqp=CAU" 

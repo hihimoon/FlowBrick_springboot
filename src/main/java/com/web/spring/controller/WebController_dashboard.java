@@ -9,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import com.web.spring.service.WebService_JangSunWoong;
 import com.web.spring.service.WebService_dashboard;
 import com.web.spring.service.WebService_notice;
+import com.web.spring.service.WebService_risk;
 import com.web.spring.vo.Emp;
 import com.web.spring.vo.Notice;
 import com.web.spring.vo.NoticeSch;
@@ -53,7 +56,14 @@ public class WebController_dashboard {
 			d.addAttribute("prjList", service.getPrjList(emp.getEmpno()));
 			
 			// 프로젝트 진행도 위젯
-			d.addAttribute("prj_chart", service.getPrjStep(emp.getEmpno()));		
+			d.addAttribute("prj_chart", service.getPrjStep(emp.getEmpno()));
+			
+			// 내 프로젝트 총예산
+			d.addAttribute("prj_HM",service.getPrjHM(emp.getEmpno()));
+			
+			// 프로젝트 리스크
+			//d.addAttribute("prj_risk", service.getCntRisk(null))
+			
 		}
 		return "index";
 	}

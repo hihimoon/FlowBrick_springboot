@@ -1,16 +1,19 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"
-    
-    %>
+%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:set var="path" value="${pageContext.request.contextPath }"/>
-<fmt:requestEncoding value="utf-8"/>     
+<fmt:requestEncoding value="utf-8"/>
+
+
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+
+
 <link rel="stylesheet" href="${path}/a00_com/bootstrap.min.css" >
 <link rel="stylesheet" href="${path}/a00_com/jquery-ui.css" >
     <link href="${path}/a00_com/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -19,32 +22,21 @@
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="${path}/a00_com/css/sb-admin-2.min.css" rel="stylesheet">
- 
-<style type="text/css">
-	.input-group-text{width:100%;background-color:linen;
-		color:black;font-weight:bolder;}
-	.input-group-prepend{width:20%;}
-	#chatArea{
-		width:80%;height:200px;overflow-y:auto;text-align:left;
-		border:1px solid green;
-	}
-	.jumbotron{padding:2%;}	
-</style>
-
-
+<link href="${path}/a00_com/css/sb-admin-2.min.css" rel="stylesheet">
 <script src="${path}/a00_com/jquery.min.js"></script>
 <script src="${path}/a00_com/popper.min.js"></script>
 <script src="${path}/a00_com/bootstrap.min.js"></script>
 <script src="${path}/a00_com/jquery-ui.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://developers.google.com/web/ilt/pwa/working-with-the-fetch-api" type="text/javascript"></script>
+
+
 <script type="text/javascript">
 
 	$(document).ready(function(){
 		
-		var loginSession="${empResult.auth}" // 세션처리
-		alert("loginSession : "+loginSession) // 세션처리
+		//var loginSession="${empResult.auth}" // 세션처리
+		//alert("loginSession : "+loginSession) // 세션처리
 			
 		// submit 엔터 방지
 		$("form").on("keypress",function(e){
@@ -65,8 +57,10 @@
 		
 		
 		
-		//인적자원 등록 버튼을 클릭하면 열리는 모달창
+
 		$("#regFrmBtn").click(function(){
+			$("#TelCheckBtn").show()
+			$("#HumanResourceTitle").text("인적자원 등록")
 			$("#frm02")[0].reset();
 			$("#regBtn").show()
 			$("#uptBtn").hide()
@@ -75,10 +69,43 @@
 			$("[name=prjNo]").val(${hrsch.prjNo})
 		})
 		
-		
-		
-		//등록 모달창에서 최종적으로 등록 누르면 작동
+		$("#TelCheckBtn").click(function(){
+			
+			if(($("#frm02 [name=tel]").val()).length!=13){
+				alert("올바른 형태가 아닙니다.")
+				return false;
+			}
+			
+			$.ajax({
+				url:"${path}/telDupCk.do",
+				data:"teldup="+$("#frm02 [name=tel]").val(),
+				type:"post",
+				dataType:"json",
+				success:function(data){
+					alert("data.ckResult : "+data.ckResult)
+					if(data.ckResult==0){
+						$("#frm02 [name=tel_DupCheck]").val("Y");
+						alert("사용 가능한 tel 입니다.")
+						$("#frm02 [name=tel]").attr("readonly",true);
+					}else{
+						$("#frm02 [name=tel_DupCheck]").val("N");
+						alert("이미 존재하는 tel 입니다.")
+					}
+				},
+				error:function(err){
+					console.log(err)
+				}
+			})
+			
+			
+			
+			
+		})
 		$("#regBtn").click(function(){
+			if($("[name=tel_DupCheck]").val()!="Y"){
+				alert("중복체크를 수행하셔야 합니다..")
+				location.href="${path}/HRList.do?prjNo="+$("[name=prjNo]").val()
+			}
 			$.ajax({
 				url:"${path}/insertHR.do",
 				data:$("#frm02").serialize(),
@@ -87,7 +114,7 @@
 					location.href="${path}/HRList.do?prjNo="+$("[name=prjNo]").val()
 				},
 				error:function(err){
-					alert(err)
+					console.log(err)
 				}
 			})
 		})
@@ -123,7 +150,6 @@
 				dataType:"json",
 				data:$("#frm02").serialize(),
 				success:function(data){
-					
 					alert(data.msg)
 					location.href="${path}/HRList.do?prjNo="+$("#frm02 [name=prjNo]").val()
 				},
@@ -137,11 +163,14 @@
 	})
 		
 	function goDetail(tel){
+		
 		$.ajax({
 			url:"${path}/getDetailHR.do",
 			data:"tel="+tel,
 			dataType:"json",
 			success:function(data){
+				$("#HumanResourceTitle").text("인적자원 상세")
+				$("#TelCheckBtn").hide()
 				$("#regBtn").hide()
 				$("#uptBtn").show()
 				$("#delBtn").show()
@@ -200,9 +229,9 @@
   	<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
   	
   	
+  		<input type="hidden" name="curPage" value="${hrsch.curPage}"/>
   	
-  	
-	    <input placeholder="전화번호" name="tel"  value="${hrsch.tel}" class="form-control mr-sm-2" />
+	    <input placeholder="010-0000-0000" name="tel"  value="${hrsch.tel}" class="form-control mr-sm-2" />
 	    <input type="hidden" name="prjNo"  value="${hrsch.prjNo}"  class="form-control mr-sm-2"/>
 	    
 	    
@@ -216,13 +245,38 @@
  	</nav>
 
 
-
+	 	<div class="input-group mt-3 mb-0">
+		    <span class="input-group-text">총:${hrsch.count}건</span>
+		    <input type="text" class="form-control" aria-label="Total count" style="width:70%;">
+		    <span class="input-group-text">페이지수</span>
+		    <select name="pageSize" class="form-control" aria-label="Page size">
+		        <option>3</option>
+		        <option>5</option>
+		        <option>10</option>
+		        <option>20</option>
+		        <option>50</option>
+		    </select>
+		</div>
+		
+		
+		
+		<script type="text/javascript">
+			// 선택된 페이지 사이즈를 다음 호출된 페이지에서 출력
+			$("[name=pageSize]").val("${hrsch.pageSize}")
+			// 페이지크기를 변경했을 때, 선택된 페이지를 초기페이지로 설정..
+			$("[name=pageSize]").change(function(){
+				$("[name=curPage]").val(1)
+				$("#frm01").attr("action","${path}/HRList.do")
+				$("#frm01").submit()
+			})
+		</script> 
+	
 
 	</form>
 	
 	
 	
-   <table class="table table-hover table-striped">
+   <table class="table table-hover table-bordered" width="100%" cellspacing="0">
    	<col width="20%">
    	<col width="20%">
    	<col width="20%">
@@ -231,7 +285,7 @@
 
 
     <thead>
-      <tr class="table-success text-center">
+      <tr class="text-center">
         <th>전화번호</th>
 		<th>프로젝트번호</th>
 		<th>부서번호</th>
@@ -245,19 +299,45 @@
     	<c:forEach var="hr" items="${hrList}">
     		<tr ondblclick="goDetail('${hr.tel}')">
     		<td>${hr.tel}</td>
-    		<td>${hr.prjNo}</td>
-    		<td>${hr.deptno}</td>
-    		<td>${hr.empno}</td>
-    		<td>${hr.sal}</td>
+    		<td style="text-align:right">${hr.prjNo}</td>
+    		<td style="text-align:right">${hr.deptno}</td>
+    		<td style="text-align:right">${hr.empno}</td>
+    		<td style="text-align:right"><fmt:formatNumber value="${hr.sal}"/></td>
     		</tr>
     	</c:forEach>
     	<tr>
-    	<td colspan="4" style="text-align:right;">총액 </td><td><fmt:formatNumber value="${totalPriceHr}"/></td>
+    	<td colspan="4" style="text-align:center;">총액 </td><td style="text-align:right"><fmt:formatNumber value="${totalPriceHr}"/></td>
     	</tr>
+
     </tbody>
 		
 
-	</table>    
+	</table>   
+	
+	
+	
+	<ul class="pagination  justify-content-end">
+	  <li class="page-item">
+	  	<a class="page-link" href="javascript:goPage(${hrsch.startBlock-1})">Previous</a></li>
+		  <c:forEach var="pcnt" begin="${hrsch.startBlock}" end="${hrsch.endBlock}">
+			  <li class="page-item ${hrsch.curPage==pcnt?'active':''}">
+			  	<a class="page-link" href="javascript:goPage(${pcnt})">${pcnt}</a></li>
+		  </c:forEach>
+	  <li class="page-item"><a class="page-link" href="javascript:goPage(${hrsch.endBlock+1})">Next</a></li>
+	</ul>
+	
+	
+	
+	<script type="text/javascript">
+		function goPage(pcnt){
+			$("[name=curPage]").val(pcnt)
+			$("#frm01").attr("action","${path}/HRList.do")
+			$("#frm01").submit()
+		}
+	</script>	
+	
+	
+	 
 </div>
 
 				</div>
@@ -296,7 +376,8 @@
 											<span class="input-group-text  justify-content-center">
 												전화번호</span>
 										</div>
-										<input type="text" name="tel" class="form-control" value=""/>
+										<input type="text" name="tel" class="form-control" placeholder="010-0000-0000" value=""/><button id="TelCheckBtn" type="button">중복체크</button>
+										<input type="hidden" name="tel_DupCheck" class="form-control" value="N"/>
 									</div>
 									<div class="input-group mb-3">
 										<div class="input-group-prepend ">
@@ -310,7 +391,14 @@
 											<span class="input-group-text  justify-content-center">
 												부서번호</span>
 										</div>
-										<input type="number" name="deptno" class="form-control" value=""/>
+										<!-- <input type="number" name="deptno" class="form-control" value=""/> -->
+										<select name="deptno">
+											<option value=10>10(대표실)</option>
+											<option value=20>20(총무부)</option>
+											<option value=30>30(개발부)</option>
+										</select>
+										
+										
 									</div>
 									<div class="input-group mb-3">
 										<div class="input-group-prepend ">

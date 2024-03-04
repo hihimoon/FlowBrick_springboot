@@ -6,6 +6,7 @@
 <mapper namespace="com.web.spring.dao.Dao_JangSunWoong">
 
 
+
 	 <update id="uptPrjBasic" parameterType="projectBasic">
 		    UPDATE PROJECTBASIC 
 		    SET PRJNAME =#{prjName},
@@ -16,17 +17,40 @@
 		    WHERE prjNo=#{prjNo}
 	 </update>
 
-	<delete id="delPrjBasic" parameterType="int">
+	<delete id="delPrjBasic" parameterType="long">
 		DELETE projectbasic WHERE prjNo=#{prjNo}
 	</delete>
 
+	<delete id="delRiskByPrjBasic" parameterType="long">
+		DELETE RISK WHERE prjNo=#{prjNo}
+	</delete>
 
-	<select id="getPrjName" resultType="String" parameterType="int">
+	<delete id="delMATERIALRESOURCEByPrjBasic" parameterType="long">
+		DELETE MATERIALRESOURCE WHERE prjNo=#{prjNo}
+	</delete>
+
+	<delete id="delHUMANRESOURCEByPrjBasic" parameterType="long">
+		DELETE HUMANRESOURCE WHERE prjNo=#{prjNo}
+	</delete>
+
+	<delete id="delPROJECTTEAMByPrjBasic" parameterType="long">
+		DELETE PROJECTTEAM WHERE prjNo=#{prjNo}
+	</delete>
+
+
+
+
+
+
+
+
+
+	<select id="getPrjName" resultType="String" parameterType="long">
 		SELECT prjname FROM PROJECTBASIC
 		WHERE prjNo=#{prjNo}
 	</select>
 	
-	<update id="changePrjName" parameterType="int">
+	<update id="changePrjName" parameterType="long">
 		UPDATE MATERIALRESOURCE 
 		SET prjname= (SELECT prjname FROM projectbasic WHERE prjno=#{prjNo})
 		WHERE prjno =#{prjNo}
@@ -38,24 +62,53 @@
 
 
 
-	<select id="getMRList" resultType="materialresource" parameterType="materialresource">
-		SELECT * FROM MATERIALRESOURCE
-		WHERE prjname LIKE '%'||#{prjname}||'%'
-		AND  materialresourcename LIKE '%'||#{materialresourcename}||'%'
+
+	
+	
+	
+	
+	
+	
+	
+	<select id="totMR" resultType="int" parameterType="mrSch">
+		select count(*)
+		from MATERIALRESOURCE 
+		where 1=1
+		and materialresourcename LIKE '%'||#{materialresourcename}||'%'
 		and prjNo=#{prjNo}
-		ORDER BY MATERIALRESOURCENO
+	</select> 
+	
+	<select id="getMRList" resultType="materialresource" parameterType="mrSch">
+		SELECT *
+     		FROM (
+       		select rownum cnt, b.*
+        	from MATERIALRESOURCE b
+         	where 1=1
+         	and materialresourcename LIKE '%'||#{materialresourcename}||'%'
+         	and prjNo=#{prjNo}
+      		)
+     	 	WHERE cnt BETWEEN #{start} AND #{end}
 	</select>
 
-	<select id="totalPriceMr" resultType="int" parameterType="materialresource">
-		SELECT sum(price*PRODUCTCNT) FROM MATERIALRESOURCE
-		WHERE prjname LIKE '%'||#{prjname}||'%'
-		AND  materialresourcename LIKE '%'||#{materialresourcename}||'%'
-		and prjNo=#{prjNo}
+	<select id="totalPriceMr" resultType="int" parameterType="mrSch">
+		SELECT sum(price*PRODUCTCNT)
+     		FROM (
+       		select rownum cnt, b.*
+        	from MATERIALRESOURCE b
+         	where 1=1
+         	and materialresourcename LIKE '%'||#{materialresourcename}||'%'
+         	and prjNo=#{prjNo}
+      		)
+     	 	WHERE cnt BETWEEN #{start} AND #{end}
 	</select>
+	
+	
+	
+	
 	
 	<insert id="insertMR" parameterType="materialresource">
 		INSERT INTO MATERIALRESOURCE
-		values(#{materialresourceno},#{prjNo},#{prjname},#{rentorbuy},#{price},#{materialresourcename},#{productcnt},#{facilityloc},#{division})
+		values(flowbrick_materialresourceno.nextval,#{prjNo},#{prjname},#{rentorbuy},#{price},#{materialresourcename},#{productcnt},#{facilityloc},#{division})
 	</insert>
 	
 	<select id="getDetailMR" resultType="materialresource" parameterType="int">
@@ -67,7 +120,6 @@
 		DELETE MATERIALRESOURCE
 		WHERE materialresourceno=#{materialresourceno}
 	</delete>
-
 
 	<update id="uptMR" parameterType="materialresource">
 		UPDATE MATERIALRESOURCE
@@ -87,25 +139,56 @@
 
 
 
-
-
-
-
-	<select id="getHRList" resultType="humanresource" parameterType="humanresource">
-		SELECT * FROM HUMANRESOURCE
-		WHERE tel LIKE '%'||#{tel}||'%'
+	<select id="totHR" resultType="int" parameterType="hrSch">
+		select count(*)
+		from Humanresource 
+		where 1=1
+		and tel LIKE '%'||#{tel}||'%'
 		and prjNo=#{prjNo}
+	</select> 
+	
+	<select id="getHRList" resultType="humanresource" parameterType="hrSch">
+			SELECT *
+     		FROM (
+	       		select rownum cnt, b.*
+	        	from humanresource b
+	         	where 1=1
+	         	and tel LIKE '%'||#{tel}||'%'
+	         	and prjNo=#{prjNo}
+      		)
+     	 	WHERE cnt BETWEEN #{start} AND #{end}
 	</select>
 
-	<select id="totalPriceHr" resultType="int" parameterType="humanresource">
-		SELECT sum(sal) FROM HUMANRESOURCE
-		WHERE tel LIKE '%'||#{tel}||'%'
-		and prjNo=#{prjNo}
+	<select id="totalPriceHr" resultType="int" parameterType="hrSch">
+			SELECT sum(sal)
+     		FROM (
+	       		select rownum cnt, b.*
+	        	from humanresource b
+	         	where 1=1
+	         	and tel LIKE '%'||#{tel}||'%'
+	         	and prjNo=#{prjNo}
+      		)
+     	 	WHERE cnt BETWEEN #{start} AND #{end}
 	</select>
+
+
+
+
+
+
+
+	
+
+
 
 	<insert id="insertHR" parameterType="humanresource">
 		INSERT INTO humanresource values(#{tel},#{prjNo},#{deptno},#{empno},#{sal})
 	</insert>
+	
+	<select id="telDupCk" resultType="int" parameterType="String">
+		SELECT count(tel) FROM HUMANRESOURCE 
+		WHERE tel=#{teldup}
+	</select>
 	
 	<select id="getDetailHR" resultType="humanresource" parameterType="String">
 		SELECT * FROM HUMANRESOURCE 
@@ -161,12 +244,143 @@
 	</update>
 	
 	<insert id="transferToRepositoryStep2" parameterType="databetweenrepandmr">
-	INSERT INTO REPOSITORY (repno,division,materialresourcename,repcnt,rentorbuy,facilityloc)
-	SELECT flowbrick_repno.nextval, m.division, m.MATERIALRESOURCENAME, #{cntInput}, m.RENTORBUY, m.FACILITYLOC 
-	FROM MATERIALRESOURCE m 
-	WHERE MATERIALRESOURCENO=#{materialresourceno}
+		INSERT INTO REPOSITORY (repno,division,materialresourcename,repcnt,rentorbuy,facilityloc)
+		SELECT flowbrick_repno.nextval, m.division, m.MATERIALRESOURCENAME, #{cntInput}, m.RENTORBUY, m.FACILITYLOC 
+		FROM MATERIALRESOURCE m 
+		WHERE MATERIALRESOURCENO=#{materialresourceno}
 	</insert>
 
 
+	
+
+
+	
+	<update id="transferToMaterialResourceStep1" parameterType="databetweenmrandrep">
+		UPDATE REPOSITORY 
+		SET repcnt=repcnt - #{cntInputRepToMr}
+		WHERE repno=#{repno}
+	</update>
+	
+	<insert id="transferToMaterialResourceStep2" parameterType="databetweenmrandrep">
+		INSERT INTO MATERIALRESOURCE (materialresourceno,prjno,prjname,rentorbuy,price,materialresourcename,productcnt,facilityloc,division)
+		SELECT flowbrick_materialresourceno.nextval, #{prjNo}, #{prjname}, r.rentorbuy, 0, r.materialresourcename, #{cntInputRepToMr}, r.facilityloc,r.division
+		FROM REPOSITORY r 
+		WHERE repno=#{repno}
+	</insert>
+	
+	
+	
+	
+	
+	<select id="getRepCnt" resultType="int" parameterType="int">
+		SELECT repcnt 
+		FROM REPOSITORY 
+		WHERE repno=#{repno}
+	</select>
+	 
+
+	<delete id="deleteZeroCntMR">
+		DELETE from materialresource WHERE productcnt=0
+	</delete>
+
+	
+	<delete id="deleteZeroCntRepository">
+		DELETE FROM REPOSITORY r WHERE repcnt=0
+	</delete>
+
+
+
+
+
+	
+	<select id="getGanttTask" parameterType="gantt_task" resultType="gantt_task">
+		SELECT p.prjno id, to_char(p.prjbegin,'YYYY-MM-DD') start_date,to_char(p.prjend,'YYYY-MM-DD') end_date, 
+		p.PRJNAME text , p.progress, p.parent, p.prjpriority priority, p.prjstep step FROM projectbasic p
+		UNION all
+		SELECT t.taskno id, to_char(t.taskbegin,'YYYY-MM-DD') start_date,to_char(t.taskend,'YYYY-MM-DD') end_date, 
+		t.taskNAME text , t.taskprogress, t.taskparent, t.taskpriority priority, t.taskstep step
+		FROM task t
+		ORDER BY id
+	</select>
+	
+	<select id="getGanttLinks" parameterType="gantt_links" resultType="gantt_links">
+		SELECT * FROM GANTT_LINKS
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	<select id="selectRelativeTask" resultType="long" parameterType="long">
+		select taskno FROM task 
+		WHERE taskparent = #{id}
+	</select>
+	
+	<delete id="deleteRelativeProject" parameterType="long">
+		DELETE FROM PROJECTBASIC 
+		WHERE prjno =#{id}
+	</delete>
+	
+	<delete id="deleteRelativeTask" parameterType="long">
+		DELETE FROM task 
+		WHERE taskno =#{id}
+	</delete>
+	
+	
+	
+	
+	
+	
+	
+	
+	<insert id="insertProjectFromGantt" parameterType="gantt_task">
+		INSERT INTO PROJECTBASIC values(#{id},#{text},#{priority},to_date(#{start_date},'MON DD YYYY','NLS_DATE_LANGUAGE=AMERICAN'),to_date(#{start_date},'MON DD YYYY','NLS_DATE_LANGUAGE=AMERICAN'),to_date(#{end_date},'MON DD YYYY','NLS_DATE_LANGUAGE=AMERICAN'),#{step},0,#{parent},0)
+	</insert>
+
+
+	<insert id="insertTaskFromGantt" parameterType="gantt_task">
+		INSERT INTO task values(#{id},#{text},#{priority},to_date(#{start_date},'MON DD YYYY','NLS_DATE_LANGUAGE=AMERICAN'),to_date(#{start_date},'MON DD YYYY','NLS_DATE_LANGUAGE=AMERICAN'),to_date(#{end_date},'MON DD YYYY','NLS_DATE_LANGUAGE=AMERICAN'),#{step},0,#{parent},0)
+	</insert>
+
+
+
+
+
+
+	<insert id="updateProjectFromGantt" parameterType="gantt_task">
+		UPDATE PROJECTBASIC SET prjname = #{text}, prjpriority = #{priority},  PRJBEGIN = to_date(#{start_date},'MON DD YYYY','NLS_DATE_LANGUAGE=AMERICAN'), PRJEND =to_date(#{end_date},'MON DD YYYY','NLS_DATE_LANGUAGE=AMERICAN') , PRJSTEP =#{step} , progress=#{progress} , parent=#{parent}, sortorder=0 WHERE prjno=#{id}
+	</insert>
+	
+	<insert id="updateTaskFromGantt" parameterType="gantt_task">
+		UPDATE Task SET TASKNAME= #{text}, TASKPRIORITY= #{priority},  TASKBEGIN= to_date(#{start_date},'MON DD YYYY','NLS_DATE_LANGUAGE=AMERICAN'), TASKEND=to_date(#{end_date},'MON DD YYYY','NLS_DATE_LANGUAGE=AMERICAN') , TASKSTEP=#{step} , TASKPROGRESS=#{progress} , TASKPARENT=#{parent}, TASKSORTORDER=0 WHERE TASKNO =#{id} 
+	</insert>
+	
+	
+	
+	
+	
+	
+	
+	<insert id="insertLinkFromGantt" parameterType="gantt_links">
+		INSERT INTO GANTT_LINKS values(#{id},#{source},#{target},#{type})
+	</insert>
+	
+	<delete id="deleteLinkFromGantt" parameterType="long">
+		DELETE FROM GANTT_LINKS WHERE id=#{id}
+	</delete>
+	
+	<delete id="deleteLinkByProjectDelete">
+		DELETE FROM GANTT_LINKS 
+		WHERE SOURCE=#{id} OR target=#{id}
+	</delete>
+	
+	
+	
+
+	
+	
+	
 	
 </mapper>	

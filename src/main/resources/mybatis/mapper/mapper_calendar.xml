@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.spring.dao.Dao_calendar">
+	<resultMap type="calendar" id="calRst">
+		<result column="startDate" property="start"/>
+		<result column="endDate" property="end"/>
+		<result column="url" property="urlLink"/>
+	</resultMap>
+	<select id="getCalList" parameterType="int" resultMap="calRst" >
+		SELECT calid, prjno, empno, title,
+			to_char(startDate, 'YYYY-MM-DD"T"HH24:MI:SS"+09:00"') startDate, 
+			to_char(endDate, 'YYYY-MM-DD"T"HH24:MI:SS"+09:00"') endDate,
+			content, backgroundcolor, textcolor, allday, url 
+		FROM calendar
+		WHERE empno=#{empno}
+	</select>
+	
+	<insert id="insertCalendar" parameterType="calendar">
+		INSERT INTO calendar values(
+			calendar_seq.nextval, #{prjNo}, #{empNo}, #{title},
+			to_date(#{start},'YYYY-MM-DD"T"HH24:MI:SS"+09:00"'), 
+			to_date(#{end},'YYYY-MM-DD"T"HH24:MI:SS"+09:00"'), 
+			#{content}, #{backgroundColor}, #{textColor},#{allDay},#{urlLink})
+	</insert>	
+
+	<update id="updateCalendar" parameterType="calendar">
+		UPDATE calendar
+		   SET title = #{title},
+		       startDate = to_date(#{start}, 'YYYY-MM-DD"T"HH24:MI:SS"+09:00"' ),
+			   endDate = to_date(#{end}, 'YYYY-MM-DD"T"HH24:MI:SS"+09:00"' ),
+			   content = #{content},
+			   backgroundcolor = #{backgroundColor},
+			   textcolor = #{textColor},
+			   allDay = #{allDay},
+			   url = #{urlLink}
+		 WHERE calid = #{calId}
+	</update>
+	
+	<delete id="deleteCalendar" parameterType="int">
+		DELETE FROM calendar WHERE calId = #{calId}
+	</delete>	 
+</mapper>	

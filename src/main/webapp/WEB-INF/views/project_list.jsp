@@ -35,7 +35,16 @@
 
     <!-- Custom styles for this template-->
     <link href="${path}/a00_com/css/sb-admin-2.min.css" rel="stylesheet">
- <script src="${path}/a00_com/jquery.min.js"></script>
+<style type="text/css">
+#input-group-prepend {
+	width: 20%;
+}
+#input-group-text {
+	width: 100%;
+}
+
+</style>
+<script src="${path}/a00_com/jquery.min.js"></script>
 <script src="${path}/a00_com/popper.min.js"></script>
 <script src="${path}/a00_com/bootstrap.min.js"></script>
 <script src="${path}/a00_com/jquery-ui.js"></script>
@@ -43,6 +52,11 @@
 <script src="https://developers.google.com/web/ilt/pwa/working-with-the-fetch-api" type="text/javascript"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
+		var sessId = "${empResult.empno}"
+			if (sessId == "") {
+				alert("로그인을 하여야 현재화면을 볼 수 있습니다\n로그인 페이지 이동")
+				location.href = "${path}/login.do"
+			}
 		searchProject()
 		
 		$("#schBtn").click(function(){
@@ -60,7 +74,37 @@
 			}
 		})
 		
+		$("[name=pageSize]").change(function(){
+			$("[name=curPage]").val(1)
+			$("#schBtn").click()
+		})
+		
 		$("#regBtn").click(function(){
+			if($("#prjName").val() == ""){
+				alert("프로젝트명을 입력하세요.")
+				return
+			}
+			if($("#prjPriority").val()==""){
+				alert("프로젝트 중요도를 입력하세요.")
+				return
+			}
+			if($("#prjAcceptDateStr").val()==""){
+				alert("프로젝트 수주일을 입력하세요.")
+				return
+			}
+			if($("#beginDateStr").val()==""){
+				alert("프로젝트 시작일 입력하세요.")
+				return
+			}
+			if($("#endDateStr").val()==""){
+				alert("프로젝트 마감일을 입력하세요.")
+				return
+			}
+			if($("#teamName").val()==""){
+				alert("팀명을 입력하세요.")
+				return
+			}
+
 			if(confirm("등록하시겠습니까?")){
 				$.ajax({
 					type:"post",
@@ -71,7 +115,9 @@
 						alert(data.msg)
 						searchProject()
 						$("#clsBtn").click()
-						$("#clsBtn2").click()
+						$("#md01").click()
+						$("#frm02")[0].reset()
+						$("#teamMateList").html('')
 					},
 					error:function(err){
 						console.log(err)
@@ -82,6 +128,8 @@
 		
 		$("#tmBtn").click(function(){
 			transferData()
+			$("#clsBtn2").click()
+			$("#md02").click()
 		})
 		
 	});
@@ -94,11 +142,16 @@
 		$.ajax({
 			url : "${path}/projectListJson",
 			data : $("#frm01").serialize(),
+			type : "post",
 			dataType : "json",
-			success : function(data){
-				var prjlist = data.projectList
+			success : function(project){
+				var sch = project.sch
+				console.log(sch)
+				$("#totCnt").text("총 " + sch.count + "건")
+				$("[name=curPage]").val(sch.curPage)
+				pageFunc(sch.startBlock, sch.endBlock)
 				var html = ""
-				$(prjlist).each(function(idx, proj){
+				$(project.pblist).each(function(idx, proj){
 					html += "<tr ondblclick='goDetail("+proj.prjNo+")'>"
 					html += "<td>"+proj.cnt+"</td>"
 					html += "<td>"+proj.prjName+"</td>"
@@ -116,19 +169,38 @@
 		})
 	}
 	
+	function pageFunc(stBlk, enBlk ){
+		var curPg = $("[name=curPage]").val()
+		var pageHTML = '<li class="page-item"><a class="page-link" href="javascript:goPage('+(stBlk-1)+')">Previous</a></li>'
+		for(var pNo = stBlk;pNo<=enBlk;pNo++){
+			pageHTML += '<li class="page-item '+(pNo==curPg?'active':'')+'">'
+			pageHTML += '<a class="page-link" href="javascript:goPage('+pNo+')">'+pNo+'</a>'
+			pageHTML += '</li>'
+		}
+		pageHTML += '<li class="page-item"><a class="page-link" href="javascript:goPage('+(enBlk+1)+')">Next</a></li>'
+	    $(".pagination").html(pageHTML)
+	}
+    
+    
+	function goPage(no){
+		//alert(no)
+		$("[name=curPage]").val(no)
+		$("#schBtn").click()
+	}
+	
     // 데이터 전송 함수
+    var empNoList = [];
     function transferData() {
         var empno = parseInt($("select[name='empno']").val());
-        var auth = $("select[name='auth']").val();
-
+		
         // 데이터 전송
-        $("#empno").val(empno);
-        $("#auth").val(auth);
+        empNoList.push(empno);
+        console.log(empno);
+        console.log(empNoList);
         $("#teamMateList").append(
-        	"<div class='input-group-prepend'><span class='input-group-text  justify-content-center'>팀원</span></div>"
-        	+ "<input type='number' id='empno' class='form-control' value='"+empno+"' placeholder='팀원 선택' readonly='readonly'/>"
-        	+ "<div class='input-group-prepend'><span class='input-group-text  justify-content-center'>권한</span></div>"
-        	+ "<input type='text' id='auth' class='form-control' value='"+auth+"' placeholder='권한 선택' readonly='readonly'/>");
+        	"<div class='input-group-prepend' id='input-group-prepend'><span class='input-group-text  justify-content-center' id='input-group-text'>팀원</span></div>"
+        	+ "<input type='hidden' name='empno' id='empno' class='form-control' value='"+empNoList+"' placeholder='팀원 선택'/>"
+			+ "<span class='form-control'>"+empno+"</span>");
         // 모달 닫기
         $("#insertTeamMateModal").modal("hide");
     }
@@ -167,7 +239,7 @@
 			<div id="content">
 
 				<!-- Topbar    -->
-				<%@ include file="inc/topBar.jsp" %>
+				<%@ include file="inc/topBar.jsp"%>
 				<!-- End of Topbar -->
 
 				<!-- Begin Page Content -->
@@ -175,25 +247,37 @@
 
                      <!-- Page Heading -->
                     <h1 class="h3 mb-2 text-gray-800">Project List</h1>
-					<!-- Topbar Search -->
-					<form id="frm01" method="post"
-						class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-						<div class="input-group">
-							<input name="prjName" id="schPrj" type="text" class="form-control border-0 small"
-								value="${sch.prjName}" placeholder="Project Name" aria-label="Search"
-								aria-describedby="basic-addon2">
-							<div class="input-group-append">
-								<button id="schBtn" class="btn btn-primary" type="button">
-									<i class="fas fa-search fa-sm"></i>
-								</button>
-							</div>
-						</div>
-					</form>
+
 <p>
-                    <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
                             <h6 class="m-0 font-weight-bold text-primary">Project Tables</h6>
+							<!-- Topbar Search -->
+							<form id="frm01" method="post"
+								class="d-none d-sm-inline-block form-inline mr-ml-md-3 my-2 my-md-0 w-100 navbar-search">
+								<div class="input-group mt-3 mb-0">
+									<input type="hidden" name="curPage" value="1"/>
+									<input name="prjName" id="schPrj" type="text" class="form-control border-0 small w-70"
+										value="${sch.prjName}" placeholder="Project Name" aria-label="Search"
+										aria-describedby="basic-addon2">
+									<div class="input-group mr-3">
+										<button id="schBtn" class="btn btn-primary" type="button">
+											<i class="fas fa-search fa-sm"></i>
+										</button>
+									</div>
+									<div class="input-group ml-auto">
+									    <span class="input-group-text" id="totCnt"></span>
+									    <span class="input-group-text">리스트 수</span>
+									    <select name="pageSize" class="form-control" aria-label="Page size">
+									        <option>3</option>
+									        <option>5</option>
+									        <option selected>10</option>
+									        <option>20</option>
+									        <option>50</option>
+									    </select>
+									</div>
+								</div>
+							</form>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -222,13 +306,6 @@
 									</a>
 								</div>
 									<ul class="pagination justify-content-center">
-									  <li class="page-item"><a class="page-link" href="javascript:goPage(${sch.startBlock-1})">Previous</a></li>
-									  <c:forEach var="pcnt" begin="1" end="${sch.pageCount}">
-									  <li class="page-item ${sch.curPage==pcnt?'active':''}">
-									  	<a class="page-link" href="${path}/projectList.do?curPage=${pcnt}">${pcnt}</a>
-									  </li>
-									  </c:forEach>
-									  <li class="page-item"><a class="page-link" href="javascript:goPage(${sch.endBlock+1})">Next</a></li>
 									</ul>
                             </div>
                         </div>
@@ -250,7 +327,7 @@
 						<!-- Project Basic -->
 							<div class="modal-header">
 								<h5 class="modal-title" id="prjTitle">프로젝트 등록</h5>
-								<button type="button" class="close" data-dismiss="modal"
+								<button type="button" class="close" id="md01" data-dismiss="modal"
 									aria-label="Close">
 									<span aria-hidden="true">&times;</span>
 								</button>
@@ -258,18 +335,18 @@
 							<form id="frm02" class="form" method="post">
 							<div class="modal-body">
 									<div class="input-group mb-3">
-										<div class="input-group-prepend ">
-											<span class="input-group-text  justify-content-center">
+										<div class="input-group-prepend " id="input-group-prepend">
+											<span class="input-group-text  justify-content-center" id="input-group-text">
 												프로젝트명</span>
 										</div>
-										<input type="text" name="prjName" class="form-control" value="" placeholder=""/>
+										<input type="text" name="prjName" id="prjName" class="form-control" value="" placeholder=""/>
 									</div>
 									<div class="input-group mb-3">
-										<div class="input-group-prepend ">
-											<span class="input-group-text  justify-content-center">
+										<div class="input-group-prepend " id="input-group-prepend">
+											<span class="input-group-text  justify-content-center" id="input-group-text">
 												중요도</span>
 										</div>
-										<select name="prjPriority" class="form-control">
+										<select name="prjPriority" id="prjPriority" class="form-control">
 											<option value="1">1</option>
 											<option value="2">2</option>
 											<option value="3">3</option>
@@ -278,36 +355,36 @@
 										</select> 
 									</div>
 									<div class="input-group mb-3">
-										<div class="input-group-prepend ">
-											<span class="input-group-text  justify-content-center">
+										<div class="input-group-prepend " id="input-group-prepend">
+											<span class="input-group-text  justify-content-center" id="input-group-text">
 												수주일</span>
 										</div>
-										<input type="date" name="prjAcceptDateStr" class="form-control" />
+										<input type="date" name="prjAcceptDateStr" id="prjAcceptDateStr" class="form-control" />
 									</div>
 									<div class="input-group mb-3">
-										<div class="input-group-prepend ">
-											<span class="input-group-text  justify-content-center">
+										<div class="input-group-prepend " id="input-group-prepend">
+											<span class="input-group-text  justify-content-center" id="input-group-text">
 												시작일</span>
 										</div>
-										<input type="date" name="beginDateStr" class="form-control"/>
+										<input type="date" name="beginDateStr" id="beginDateStr" class="form-control"/>
 									</div>
 									<div class="input-group mb-3">
-										<div class="input-group-prepend ">
-											<span class="input-group-text  justify-content-center">
+										<div class="input-group-prepend " id="input-group-prepend">
+											<span class="input-group-text  justify-content-center" id="input-group-text">
 												종료일</span>
 										</div>
-										<input type="date" name="endDateStr" class="form-control"/>
+										<input type="date" name="endDateStr" id="endDateStr" class="form-control"/>
 									</div>
 									<div class="input-group mb-3">
-										<div class="input-group-prepend ">
-											<span class="input-group-text  justify-content-center">
+										<div class="input-group-prepend " id="input-group-prepend">
+											<span class="input-group-text  justify-content-center" id="input-group-text">
 												진행단계</span>
 										</div>
-										<select name="prjStep" class="form-control">
-											<option value="설계">설계</option>
-											<option value="개발">개발</option>
-											<option value="테스트">테스트</option>
-											<option value="디버깅">디버깅</option>
+										<select name="prjStep" id="prjStep" class="form-control">
+											<option value="Designing">설계</option>
+											<option value="Developing">개발</option>
+											<option value="Testing">테스트</option>
+											<option value="Debugging">디버깅</option>
 										</select>
 									</div>
 							</div>
@@ -319,11 +396,11 @@
 							</div>
 							<div class="modal-body">
 									<div class="input-group mb-3">
-										<div class="input-group-prepend ">
-											<span class="input-group-text  justify-content-center">
+										<div class="input-group-prepend " id="input-group-prepend">
+											<span class="input-group-text  justify-content-center" id="input-group-text">
 												팀명</span>
 										</div>
-										<input type="text" name="teamName" class="form-control" value="" placeholder="팀명 입력">
+										<input type="text" name="teamName" id="teamName" class="form-control" value="" placeholder="팀명 입력">
 											<a id="insertModal" href="#" class="btn btn-primary btn-icon-split"
 											   data-toggle="modal" data-target="#insertTeamMateModal">
 												<span class="icon text-white-50"> <i class="fas fa-arrow-right"></i></span>
@@ -344,7 +421,6 @@
 								<button type="button" id="clsBtn" class="btn btn-secondary"
 									data-dismiss="modal">Close</button>
 							</div>
-							<button type="button" id="clsBtn2" class="btn btn-secondary-hidden" data-dismiss="modal"></button>
 						</div>
 					</div>
 				</div>
@@ -358,7 +434,7 @@
 						<div class="modal-content">
 							<div class="modal-header">
 								<h5 class="modal-title" id="teamMateTitle">팀원 등록</h5>
-								<button type="button" class="close" data-dismiss="modal"
+								<button type="button" class="close" id="md02" data-dismiss="modal"
 									aria-label="Close">
 									<span aria-hidden="true">&times;</span>
 								</button>
@@ -366,8 +442,8 @@
 							<div class="modal-body">
 								<form id="frm04" class="form" method="post">
 									<div class="input-group mb-3">
-										<div class="input-group-prepend ">
-											<span class="input-group-text  justify-content-center">
+										<div class="input-group-prepend " id="input-group-prepend">
+											<span class="input-group-text  justify-content-center" id="input-group-text">
 												팀원</span>
 										</div>
 										<select name="empno"  class="form-control" >
@@ -377,17 +453,6 @@
 											</c:forEach>
 										</select>	
 									</div>
-									<div class="input-group mb-3">
-										<div class="input-group-prepend ">
-											<span class="input-group-text  justify-content-center">
-												권한</span>
-										</div>
-										<select name="auth" class="form-control">
-											<option value="">권한 설정</option>								
-											<option>팀장</option>								
-											<option>팀원</option>																
-										</select> 
-									</div>
 								</form>
 							</div>
 							<div class="modal-footer">
@@ -396,7 +461,7 @@
 										class="fas fa-arrow-right"></i>
 								</span> <span class="text">팀원 등록</span>
 								</a>
-								<button type="button" id="clsBtn" class="btn btn-secondary"
+								<button type="button" id="clsBtn2" class="btn btn-secondary"
 									data-dismiss="modal">Close</button>
 							</div>
 							<script type="text/javascript">
@@ -428,8 +493,7 @@
 	<a class="scroll-to-top rounded" href="#page-top"> 
 		<i class="fas fa-angle-up"></i>
 	</a>
-	<!-- Logout Modal-->
-	<%@ include file="inc/logout_modal.jsp" %>
+
 	
 <!-- Bootstrap core JavaScript-->
     <script src="${path}/a00_com/vendor/jquery/jquery.min.js"></script>
@@ -441,12 +505,5 @@
 
 <!-- Custom scripts for all pages-->
 <script src="${path}/a00_com/js/sb-admin-2.min.js"></script>
-
-<!-- Page level plugins -->
-<script src="${path}/a00_com/vendor/chart.js/Chart.min.js"></script>
-
-<!-- Page level custom scripts -->
-<script src="${path}/a00_com/js/demo/chart-area-demo.js"></script>
-<script src="${path}/a00_com/js/demo/chart-pie-demo.js"></script>	
 </body>
 </html>

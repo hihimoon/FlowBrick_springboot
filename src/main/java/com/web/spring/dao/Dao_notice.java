@@ -34,6 +34,9 @@ public interface Dao_notice {
 	
 	@Select("SELECT fname FROM noticefile WHERE NO = #{no}")
 	List<String> getNoticeFile(int no);
+
+	@Select("SELECT * FROM noticefile WHERE NO = #{no}")
+	List<NoticeFile> getNoticeFiles(int no);
 	
 	// 조회수증가
 	@Update("update notice set readcnt = readcnt+1 where no=#{no}")
@@ -41,7 +44,16 @@ public interface Dao_notice {
 	
 	// 수정 처리
 	int updateNotice(Notice upt);
+	
+	// 파일 수정처리
+	@Insert("INSERT INTO noticefile values(#{no},\r\n"
+			+ "#{fname},#{path},sysdate,sysdate,#{etc})")
+	int UpdateNoticeFile(NoticeFile upt);
 
+	// 파일만 삭제 처리
+	@Delete("DELETE FROM NOTICEFILE WHERE NO = #{no} AND FNAME = #{fname}")
+	int deleteFile(NoticeFile del);
+	
 	// 삭제 처리
 	@Delete("DELETE FROM notice WHERE NO = #{no}")
 	int deleteNotice(@Param("no") int no);

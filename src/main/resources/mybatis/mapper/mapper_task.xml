@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.web.spring.dao.Dao_task">
+	<select id="cntTask" resultType="int" parameterType="taskSch">
+		SELECT COUNT(*)
+		FROM task
+		WHERE taskname LIKE '%'||#{taskName}||'%'
+	</select>
+	<select id="taskList" parameterType="taskSch" resultType="task">
+		SELECT *
+		FROM ( SELECT rownum cnt, pb.*
+				FROM (
+					  SELECT *
+					  FROM TASK t
+					  JOIN PROJECTBASIC p ON p.PRJNO = t.TASKPARENT
+					  JOIN PROJECTTEAM pt ON t.TASKPARENT = pt.PRJNO
+					  JOIN TEAMMATE tm ON pt.TEAMNO = tm.TEAMNO
+					  WHERE TASKNAME LIKE '%' ||#{taskName}|| '%'
+					  AND tm.EMPNO = #{empNo}
+					  ORDER BY t.TASKNO) pb
+				)
+		WHERE cnt BETWEEN #{startNo} AND #{endNo};
+	</select>
+	
+	<select id="taskDetail" parameterType="long" resultType="task">
+		SELECT * FROM task WHERE taskno=#{taskNo}
+	</select>
+
+	<insert id="insertTask" parameterType="task">
+		INSERT INTO projectbasic(taskno, taskparent, taskname, taskpriority, taskacceptdate, taskbegin, taskend, taskstep) 
+		VALUES(
+			 task_seq.nextval, #{prjNo}, #{taskName}, #{taskPriority},
+			 to_date(#{taskAcceptDateStr},'YYYY-MM-DD'),
+			 to_date(#{taskBeginDateStr},'YYYY-MM-DD'), 
+			 to_date(#{taskEndDateStr},'YYYY-MM-DD'), 
+			 #{taskStep}
+		)
+	</insert>
+
+	<update id="insertTaskTeamMate" parameterType="teamMate">
+		UPDATE teammate
+		SET taskno=#{taskNo}
+		WHERE tmno=#{tmNo}
+	</update>
+	
+	<delete id="deleteTask" parameterType="long">
+		DELETE FROM task WHERE taskno=#{taskNo}
+	</delete>
+
+</mapper>	

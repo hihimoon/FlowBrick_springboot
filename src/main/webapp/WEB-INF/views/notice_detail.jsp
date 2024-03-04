@@ -83,6 +83,7 @@ input[type=file]::file-selector-button {
 <script src="${path}/a00_com/jquery-ui.js"></script>
 	<script type="text/javascript">
 	var sessId = "${empResult.empno}"
+	var auth = "${empResult.auth}"
 		if (sessId == "") {
 			alert("로그인을 하여야 현재화면을 볼 수 있습니다\n로그인 페이지 이동")
 			location.href = "${path}/login.do"
@@ -103,9 +104,17 @@ input[type=file]::file-selector-button {
 	$(document).ready(function() {
 		var no = "${notice.no}"	
 		$("#uptBtn").click(function(){
+			if(auth != "관리자"){
+				alert("권한이 없습니다")
+				return
+			}
 			location.href="${path}/updateNoticeFrm.do?no="+no
 		})
 		$("#delBtn").click(function(){ 
+			if(auth != "관리자"){
+				alert("권한이 없습니다")
+				return
+			}
 			if(confirm("삭제하시겠습니까?")){
 				location.href="${path}/deleteNotice.do?no="+no		
 			}		

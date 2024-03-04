@@ -38,8 +38,8 @@
 			alert("로그인을 하여야 현재화면을 볼 수 있습니다\n로그인 페이지 이동")
 			location.href = "${path}/login.do"
 		}
-		if (auth !== "인사관리자" && auth !== "관리자") {
-			alert("관리자 or 인사관리자만 접근 가능합니다\n메인 메이지로 이동")
+		if (auth !== "인사관리자") {
+			alert("인사관리자만 접근 가능합니다\n메인 메이지로 이동")
 			location.href = "${path}/index.do"
 		}
 
@@ -142,7 +142,8 @@
 						<div class="card shadow mb-4">
 							<div class="card-header py-3">
 								<label for="deptno">부서번호</label> 
-								<input type="number" id="deptno" class="h3 mb-2 text-gray-800 form-control form_c "
+								<input type="number" id="deptno" 
+								class="h3 mb-2 text-gray-800 form-control form_c "
 									name="deptno" placeholder="부서번호 enter입력시 중복확인"> 
 									<input type="hidden" name="ckDeptno" value="N" />
 							</div>

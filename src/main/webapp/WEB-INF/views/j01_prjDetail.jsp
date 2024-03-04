@@ -1,7 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"
-    
-    %>
+    pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:set var="path" value="${pageContext.request.contextPath }"/>
@@ -11,6 +9,9 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+
+
+
 <link rel="stylesheet" href="${path}/a00_com/bootstrap.min.css" >
 <link rel="stylesheet" href="${path}/a00_com/jquery-ui.css" >
     <link href="${path}/a00_com/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -18,27 +19,19 @@
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
+
     <!-- Custom styles for this template-->
-    <link href="${path}/a00_com/css/sb-admin-2.min.css" rel="stylesheet">
- 
-<style type="text/css">
-	.input-group-text{width:100%;background-color:linen;
-		color:black;font-weight:bolder;}
-	.input-group-prepend{width:20%;}
-	#chatArea{
-		width:80%;height:200px;overflow-y:auto;text-align:left;
-		border:1px solid green;
-	}
-	.jumbotron{padding:2%;}	
-</style>
-
-
+<link href="${path}/a00_com/css/sb-admin-2.min.css" rel="stylesheet">
 <script src="${path}/a00_com/jquery.min.js"></script>
 <script src="${path}/a00_com/popper.min.js"></script>
 <script src="${path}/a00_com/bootstrap.min.js"></script>
 <script src="${path}/a00_com/jquery-ui.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://developers.google.com/web/ilt/pwa/working-with-the-fetch-api" type="text/javascript"></script>
+
+
+
+
 <script type="text/javascript">
 
 
@@ -60,13 +53,12 @@
 	
 	
 	$(document).ready(function(){
+
 		
 		//수정기능
 		$("#uptBtn").click(function(){
 			if(confirm("수정하시겠습니까?")){
-			
 			$("form").attr("action","${path}/uptPrjBasic.do")
-	
 			$("form").submit()
 			}
 		})
@@ -146,85 +138,53 @@
 <div class="jumbotron text-center">
   <h2>프로젝트 상세 항목</h2>
 </div>
-
-
-
 <div class="container">
 	<form method="post">
 	<div class="input-group mb-0">	
 		<div class="input-group-prepend ">
-			<span class="input-group-text  justify-content-center">
-				프로젝트 번호</span>
+			<span class="input-group-text  justify-content-center">프로젝트  번호</span>
 		</div>
 		<input type="text" name="prjNo" class="form-control" readonly value="${project.prjNo}" />	
 	</div>
-		
 	<div class="input-group mb-0">	
 		<div class="input-group-prepend ">
-			<span class="input-group-text  justify-content-center">
-				프로젝트이름</span>
+			<span class="input-group-text  justify-content-center">프로젝트  이름</span>
 		</div>
 		<input type="text" name="prjName" class="form-control"  value="${project.prjName}" />	
 	</div>
-	
-	
 	<div class="input-group mb-0">	
 		<div class="input-group-prepend ">
-			<span class="input-group-text  justify-content-center">
-				프로젝트중요도</span>
+			<span class="input-group-text  justify-content-center">프로젝트중요도</span>
 		</div>
 		<input name="prjPriority" class="form-control"  value="${project.prjPriority}" />	
 	</div>
-	
-	
-	
-	
-	
 	<div class="input-group mb-0">	
 		<div class="input-group-prepend ">
-			<span class="input-group-text  justify-content-center">
-				프로젝트수주일</span>
+			<span class="input-group-text  justify-content-center">프로젝트수주일</span>
 		</div>
-		<input type="date" class="form-control" readonly value="<fmt:formatDate value="${project.prjAcceptDate}" pattern="yyyy-MM-dd"/>" />
-		<!-- name뻈다. name="prjAcceptDate" 넣으면 Date타입을 요청값전송해서 에러발생한다. -->
+		<input type="date" class="form-control" 
+		readonly value="<fmt:formatDate value="${project.prjAcceptDate}" pattern="yyyy-MM-dd"/>" />
 	</div>
-	
-	
-	
 	<div class="input-group mb-0">	
 		<div class="input-group-prepend ">
-			<span class="input-group-text  justify-content-center">
-				프로젝트시작일</span>
+			<span class="input-group-text  justify-content-center">프로젝트시작일</span>
 		</div>
-		<input type="date" name="beginDateStr" class="form-control"  value="<fmt:formatDate value="${project.prjBegin}" pattern="yyyy-MM-dd"/>" />	
+		<input type="date" name="beginDateStr" class="form-control"  
+		value="<fmt:formatDate value="${project.prjBegin}" pattern="yyyy-MM-dd"/>" />	
 	</div>
-	
-	
-	
 	<div class="input-group mb-0">	
 		<div class="input-group-prepend ">
-			<span class="input-group-text  justify-content-center">
-				프로젝트종료일</span>
+			<span class="input-group-text  justify-content-center">프로젝트종료일</span>
 		</div>
-		<input type="date" name="endDateStr" class="form-control"  value="<fmt:formatDate value="${project.prjEnd}" pattern="yyyy-MM-dd"/>" />	
+		<input type="date" name="endDateStr" class="form-control"  
+		value="<fmt:formatDate value="${project.prjEnd}" pattern="yyyy-MM-dd"/>" />	
 	</div>
-	
-	
-	
-	
 	<div class="input-group mb-0">	
 		<div class="input-group-prepend ">
-			<span class="input-group-text  justify-content-center">
-				프로젝트진행단계</span>
+			<span class="input-group-text  justify-content-center">프로젝트 단계</span>
 		</div>
 		<input type="text" name="prjStep" class="form-control"  value="${project.prjStep}" />	
 	</div>
-	
-	
-	
-	
-	
-	
 	<div style="text-align:right;">
 		<input type="button" class="btn btn-light" value="자원현황" id="resourceBtn"/>
 		<input type="button" class="btn btn-warning" value="수정" id="uptBtn"/>
@@ -295,7 +255,5 @@
 <!-- Page level custom scripts -->
 <script src="${path}/a00_com/js/demo/chart-area-demo.js"></script>
 <script src="${path}/a00_com/js/demo/chart-pie-demo.js"></script>	
-</body>
-</html>
 </body>
 </html>

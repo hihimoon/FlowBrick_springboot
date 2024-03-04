@@ -11,14 +11,23 @@ public class NoticeFile {
 	private Date regdte;
 	private Date uptdte;
 	private String etc;
+	private long size;
 	public NoticeFile(){
 		
 	}
 	
-	public NoticeFile(String fname, String path, String etc) {
+	public NoticeFile(String fname, String path, String etc, long size) {
 		this.fname = fname;
 		this.path = path;
 		this.etc = etc;
+		this.size = size;
+	}
+	public NoticeFile(int no, String fname, String path, String etc, long size) {
+		this.no = no;
+		this.fname = fname;
+		this.path = path;
+		this.etc = etc;
+		this.size = size;
 	}
 
 	public NoticeFile(int no, String fname, String path, Date regdte, Date uptdte, String etc) {
@@ -65,4 +74,13 @@ public class NoticeFile {
 	public void setEtc(String etc) {
 		this.etc = etc;
 	}
+
+	public long getSize() {
+		return size;
+	}
+
+	public void setSize(long size) {
+		this.size = size;
+	}
+	
 }

@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8" import="java.util.*"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <c:set var="path" value="${pageContext.request.contextPath }" />
 <fmt:requestEncoding value="utf-8" />
 
@@ -31,8 +32,7 @@
 		    }    
 		    .scrollable-container::-webkit-scrollbar-thumb:active {
 		      background-color: #4668c8; /* 클릭할 때 색상 변경 */
-		    }
-	      
+		    }  
 </style>
 <c:if test="${not empty prjList}">
 <!-- 내 프로젝트 -->
@@ -75,7 +75,16 @@
 								<div class="col-9">
 									<div
 										class="text-lg font-weight-bold text-primary text-uppercase mb-4">
-										${prj.prjName}</div>
+										<c:choose>	
+										<c:when test="${fn:length(prj.prjName) > 20}">
+										    <c:set var="prjN" value="${fn:substring(prj.prjName, 0, 20 > fn:length(prj.prjName) ? fn:length(prj.prjName) : 20)}" />
+										    ${prjN}..
+										</c:when>
+										<c:otherwise>
+											${prj.prjName}
+										</c:otherwise>
+										</c:choose>	
+										</div>
 									<div class="progress progress mr-2 mb-4">
 										<div class="progress-bar bg-info" role="progressbar"
 											style="width: 50%" aria-valuenow="50" aria-valuemin="0"
@@ -114,7 +123,7 @@
 									<i class="fas fa-exclamation fa-2x text-gray-800"></i>
 								</div>
 								<div class="">
-									<div class="h6 mb-0 font-weight-bold text-gray-800">이슈</div>
+									<div class="h6 mb-0 font-weight-bold text-gray-800">리스크 ${prj.risk}건</div>
 								</div>		
 							</div>
 						</div>
@@ -162,15 +171,15 @@
 				<canvas id="myPieChart"></canvas>
 			</div>
 			<div class="mt-4 text-center small">
-				<span class="mr-2"> <i class="fas fa-circle text-success"></i>
+				<span class=""> <i class="fas fa-circle text-success"></i>
 					완료 [${prj_chart.complete}]
-				</span> <span class="mr-2"> <i class="fas fa-circle text-primary"></i>
+				</span> <span class=""> <i class="fas fa-circle text-primary"></i>
 					개발 [${prj_chart.develop}]
-				</span> <span class="mr-2"> <i class="fas fa-circle text-info"></i>
+				</span> <span class=""> <i class="fas fa-circle text-info"></i>
 					테스트 [${prj_chart.test}]
-				</span> <span class="mr-2"> <i class="fas fa-circle text-warning"></i>
+				</span> <span class=""> <i class="fas fa-circle text-warning"></i>
 					디버그 [${prj_chart.debug}]
-				</span><span class="mr-2"> <i class="fas fa-circle text-danger"></i>
+				</span><span class=""> <i class="fas fa-circle text-danger"></i>
 					설계 [${prj_chart.design}]
 				</span>
 			</div>

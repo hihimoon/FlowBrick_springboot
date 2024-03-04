@@ -16,30 +16,30 @@
 <%--
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script
-	src="https://developers.google.com/web/ilt/pwa/working-with-the-fetch-api"
-	type="text/javascript"></script>
+   src="https://developers.google.com/web/ilt/pwa/working-with-the-fetch-api"
+   type="text/javascript"></script>
 
 <script type="text/javascript">
-	$(document).ready(function() {
+   $(document).ready(function() {
 
-	});
+   });
 </script>
  --%>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script type="text/javascript">
-	$(document).ready(function() {
+	$(document).ready(
+			function() {
 				var sessId = "${empResult.empno}"
 				var auth = "${empResult.auth}"
 				if (sessId == "") {
 					alert("로그인을 하여야 현재화면을 볼 수 있습니다\n로그인 페이지 이동")
 					location.href = "${path}/login.do"
-				}
-				else if (auth !== "인사관리자" && auth !== "관리자") {
-					alert("관리자 or 인사관리자만 접근 가능합니다\n메인 메이지로 이동")
+				} else if (auth !== "인사관리자") {
+					alert("인사관리자만 접근 가능합니다\n메인 메이지로 이동")
 					location.href = "${path}/index.do"
 				}
-				
+
 				$("#signUpBtn").click(function() {
 
 					//초기화 구문
@@ -83,7 +83,11 @@
 					$("#signUpFrm").submit();
 
 				})
-
+				$("#ename, #email, #dept, #job").keyup(function(event) {
+					if (event.keyCode === 13) {
+						$("#signUpBtn").click();
+					}
+				})
 				// emailFormat 함수 정의
 				function emailFormat(str) {
 					return /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+$/
@@ -91,13 +95,41 @@
 				}
 
 				var msg = "${msg}"
-				if (msg != "") {
-					if (!confirm(msg + "\n계속 등록하시겠습니까?")) {
-						location.href = "${path}/sigunUp.do"
-					}
-					location.href = "${path}/empList.do" 
-				}
+				var emailMsg = "${emailMsg}"
+				if (msg !== "") {
+					var confirmMessage = msg;
 
+					if (emailMsg !== "") {
+						confirmMessage += "\n" + emailMsg;
+					}
+
+					if (!confirm(confirmMessage + "\n계속 등록하시겠습니까?")) {
+						location.href = "${path}/empList.do";
+					} else {
+						location.href = "${path}/signUp.do";
+					}
+				}
+				
+				
+				$("#job, #dept").change(function() {
+				    var selectedJob = $("#job").val();
+				    var selectedDept = $("#dept").val();
+				    var authValue = "";
+
+				    if (selectedJob === "대표") {
+				        authValue = "관리자";
+				    } else if (selectedJob === "부장" && selectedDept === "20") {
+				        authValue = "인사관리자";
+				    } else if (selectedJob === "부장" && selectedDept === "30") {
+				        authValue = "관리자";
+				    }else{
+				    	 authValue = "일반";
+				    }
+
+				    $("[name='auth']").val(authValue);
+				});
+				
+				
 			});
 </script>
 
@@ -172,11 +204,9 @@
 											<select class="form-select form-control " name="deptno"
 												id="dept">
 												<option value="" hidden selected>부서 선택</option>
-												<option value="10">개발팀</option>
-												<option value="20">인사팀</option>
-												<option value="30">기획팀</option>
-												<option value="40">디자인팀</option>
-												<option value="50">마케팅팀</option>
+												<c:forEach var="dept" items="${dlist}">
+													<option value="${dept.deptno}">${dept.dname}</option>
+												</c:forEach>
 											</select>
 										</div>
 										<div class="failureDept-message hide error-message">부서를
@@ -186,36 +216,34 @@
 										<div class="form-group">
 											<select class="form-select form-control" name="job" id="job">
 												<option value="" hidden selected>직급 선택</option>
-												<option value="대표">대표</option>
-												<option value="팀장">팀장</option>
-												<option value="부장">부장</option>
-												<option value="차장">차장</option>
-												<option value="과장">과장</option>
-												<option value="대리">대리</option>
-												<option value="주임">주임</option>
-												<option value="사원">사원</option>
-												<option value="인턴">인턴</option>
+												<c:forEach var="job" items="${jobs}">
+													<option>${job}</option>
+												</c:forEach>
 											</select>
 										</div>
 										<div class="failureJob-message hide error-message">직급을
 											입력해주세요</div>
 
+										<div class="form-group">
+											<input type="hidden" name="auth"
+												class="form-control form-control-user">
+										</div>
 
 										<button type="button"
 											class="btn btn-primary btn-user btn-block" id=signUpBtn>사원등록</button>
 
 									</form>
+
 									<hr>
 									<div class="text-center">
-										<a class="small" href="${path}/empList.do">사원목록으로
-											이동</a>
+										<a class="small" href="${path}/empList.do">사원목록으로 이동</a>
 									</div>
 									<!-- <div class="text-center">
-										<a class="small" href="forgot-password.html">비밀번호 찾기</a>
-									</div> -->
+                              <a class="small" href="forgot-password.html">비밀번호 찾기</a>
+                           </div> -->
 									<!-- <div class="text-center">
-										<a class="small" href="register.html">사원번호 등록 신청</a>
-									</div> -->
+                              <a class="small" href="register.html">사원번호 등록 신청</a>
+                           </div> -->
 								</div>
 							</div>
 						</div>

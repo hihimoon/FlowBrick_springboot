@@ -43,10 +43,10 @@ public class WebService_notice {
 		
 		sch.setBlockSize(5);
 		
-		System.out.println("현재 페이지 번호");
-		System.out.println(sch.getCurPage());
-		System.out.println("블럭의 크기");
-		System.out.println(sch.getBlockSize());
+		//System.out.println("현재 페이지 번호");
+		//System.out.println(sch.getCurPage());
+		//System.out.println("블럭의 크기");
+		//System.out.println(sch.getBlockSize());
 		int blockNum = (int)Math.ceil(sch.getCurPage()/
 				(double)sch.getBlockSize());
 
@@ -57,11 +57,11 @@ public class WebService_notice {
 		}
 
 		sch.setStartBlock((blockNum-1)*sch.getBlockSize()+1);
-		System.out.println(blockNum);
-		System.out.println(sch.getBlockSize());
+		//System.out.println(blockNum);
+		//System.out.println(sch.getBlockSize());
 		
-		System.out.println("## 시작 블럭 크기 #");
-		System.out.println(sch.getStartBlock());
+		//System.out.println("## 시작 블럭 크기 #");
+		//System.out.println(sch.getStartBlock());
 		
 		return dao.noticeList(sch);
 	} 
@@ -91,7 +91,7 @@ public class WebService_notice {
 				//  2) db파일업로드 정보 입력	
 				//  등록되는 갯수만큼 numbering 처리..				
 					ck02+=dao.insertNoticeFile(
-							new NoticeFile(fname,path,ins.getTitle()));	
+							new NoticeFile(fname,path,ins.getTitle(), mpf.getSize()));	
 				}
 			} catch (IllegalStateException e) {
 				System.out.println("#파일업로드 예외1:"+e.getMessage());
@@ -118,10 +118,53 @@ public class WebService_notice {
 		notice.setFnames(dao.getNoticeFile(no));
 		return notice;
 	}
+	public List<NoticeFile> getNoticeFiles(int no){
+		
+		return dao.getNoticeFiles(no);
+	}
 	// 수정처리
 	public String updateNotice(Notice upt) {
-		return dao.updateNotice(upt)>0?"수정성공":"수정실패";
+		int ck01 = dao.updateNotice(upt);
+		String msg = ck01>0?"공지사항 수정성공":"수정실패"; msg+="\\n";
+		int ck02 = 0;
+		// 파일업로드 정보 등록 처리.
+		MultipartFile [] mpfs = upt.getReports();
+		
+		if( mpfs!=null && mpfs.length>0) {
+			
+			try {
+				for(MultipartFile mpf:mpfs) {
+				//  1) 파일업로드 처리
+					String fname = mpf.getOriginalFilename();
+					System.out.println("용량:"+mpf.getSize());
+					// MultipartFile ==> File 변환해서 저장.
+					System.out.println("파일:"+fname);
+				//	System.out.println("경로:"+path);
+					mpf.transferTo(new File(path+fname));
+				//  2) db파일업로드 정보 입력	
+				//  등록되는 갯수만큼 numbering 처리..				
+					ck02+=dao.UpdateNoticeFile(
+							new NoticeFile(upt.getNo(),fname,path,upt.getTitle(), mpf.getSize()));	
+				}
+			} catch (IllegalStateException e) {
+				System.out.println("#파일업로드 예외1:"+e.getMessage());
+				msg+="#파일업로드 예외1:"+e.getMessage()+"\\n";
+			} catch(Exception e) {
+				System.out.println("#기타 예외3:"+e.getMessage());
+				msg+="#기타 예외3:"+e.getMessage()+"\\n";
+			}
+			msg+="파일 "+ck02+"건 등록 완료";
+		}
+		return msg;
 	}
+	// 파일만 삭제처리
+	public String deleteFile(NoticeFile del) {
+		String fname = del.getFname();
+		File fileToDelete = new File(path+fname);
+		if(fileToDelete.exists()) fileToDelete.delete();		
+		return dao.deleteFile(del)>0?"삭제성공":"삭제실패";
+	}
+	
 	
 	// 삭제처리
 	public String deleteNotice(int no) {

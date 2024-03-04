@@ -5,30 +5,67 @@
 <mapper namespace="com.web.spring.dao.Dao_risk">
 	<select id="cntRisk" resultType="int" parameterType="riskSch">
 		SELECT COUNT(*)
-		FROM risk
+		FROM risk r, fb_emp e, projectbasic p
 		WHERE 1=1
-		AND riskname LIKE '%'||#{riskName}||'%'
+		AND r.riskname like '%'||#{riskName}||'%'
+		AND e.ename like '%'||#{ename}||'%'
+		AND r.empno = e.empno
+		AND p.prjName like '%'||#{prjName}||'%'
+		AND r.prjNo = p.prjNo
 	</select>
 	<select id="riskList" parameterType="riskSch" resultType="risk">
 		SELECT * 
-		FROM (
-			SELECT rownum cnt, r.*
-			FROM risk r, fb_emp e, projectbasic p
-			WHERE 1=1
-			AND r.riskname like '%'||#{riskName}||'%'
-			AND e.ename like '%'||#{ename}||'%'
-			AND r.empno = e.empno
-			AND p.prjName like '%'||#{prjName}||'%'
-			AND r.prjNo = p.prjNo
-			order by cnt DESC 
+		FROM (SELECT rownum cnt, rsk.*
+			  FROM (
+					SELECT p.prjname, e.ename, r.*
+					FROM risk r, fb_emp e, projectbasic p
+					WHERE 1=1
+					AND r.riskname like '%'||#{riskName}||'%'
+					AND e.ename like '%'||#{ename}||'%'
+					AND r.empno = e.empno
+					AND p.prjName like '%'||#{prjName}||'%'
+					AND r.prjNo = p.prjNo
+					order by r.riskno DESC) rsk 
 		)
-		where cnt BETWEEN #{start} AND #{end}
+		where cnt BETWEEN #{startNo} AND #{endNo}
 	</select>
+	<select id="getRiskDetail" parameterType="int" resultType="risk">
+		SELECT * FROM risk WHERE riskno=#{riskNo}
+	</select>
+	<select id="getRiskFile" parameterType="int" resultType="String">
+		SELECT fname FROM riskfile WHERE riskno=#{riskNo}
+	</select>
+	
 	<insert id="insertRisk" parameterType="risk">
 		INSERT INTO risk VALUES(
 			risk_seq.nextval, #{prjNo}, #{empNo}, #{riskName}, #{riskContent},
-			#{dangerStep}, to_date(#{uploadDateStr}, 'YYYY-MM-DD'), 
-			to_date(#{completeDateStr}, 'YYYY-MM-DD'), #{state}
+			null, sysdate, null, '승인대기'
 		)
 	</insert>
+	<insert id="insertRiskFile" parameterType="riskFile">
+		INSERT INTO riskfile VALUES(
+			riskfile_seq.nextval, risk_seq.currval, #{fname}, #{path}, sysdate, sysdate, #{etc}
+		)
+	</insert>
+	
+	<update id="updateRisk" parameterType="risk">
+		UPDATE risk
+		SET riskname=#{riskName}, riskcontent=#{riskContent}
+		WHERE riskno=#{riskNo}
+	</update>
+	<insert id="updateRiskFile" parameterType="riskFile">
+		INSERT INTO riskfile VALUES(
+			riskfile_seq.nextval, #{riskNo}, #{fname}, #{path}, sysdate, sysdate, #{etc}
+		)
+	</insert>
+	
+	<delete id="deleteRisk" parameterType="int">
+		DELETE FROM risk WHERE riskno=#{riskNo}
+	</delete>
+	<delete id="deleteRiskFile" parameterType="int">
+		DELETE FROM riskfile WHERE riskno=#{riskNo}
+	</delete>
+	<delete id="deleteFile" parameterType="riskFile">
+		DELETE FROM RISKFILE WHERE fileno=#{fileNo}
+	</delete>
 </mapper>	

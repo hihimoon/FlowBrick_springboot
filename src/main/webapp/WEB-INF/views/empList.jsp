@@ -23,68 +23,74 @@
 <!-- Custom styles for this template-->
 <link href="${path}/a00_com/css/sb-admin-2.min.css" rel="stylesheet">
 <link href="${path}/a00_com/css/css2.css" rel="stylesheet">
+<link href="${path}/a00_com/css/login.css" rel="stylesheet">
 
 <script src="${path}/a00_com/jquery.min.js"></script>
 <script src="${path}/a00_com/jquery-ui.js"></script>
 <script type="text/javascript">
+	document.addEventListener('keydown', function(event) {
+		if (event.key === "Enter") {
+			event.preventDefault();
+		}
+	});
 	$(document).ready(function() {
 		searchEmpList()
-		
-		$("#schBtn").click(function(){
+
+		$("#schBtn").click(function() {
 			searchEmpList()
 		})
-		
-		$("[name=ename]").keyup(function(){
-				searchEmpList()
+
+		$("[name=ename]").keyup(function() {
+			searchEmpList()
 		})
-		
-		$("#frm01").on("keypress", function(e){
-			if(e.keyCode==13){
-				e.preventDefault()
-				searchEmpList()
-			}
-		})
-		
-		
+
 		var sessId = "${empResult.empno}"
 		var auth = "${empResult.auth}"
-			if (sessId == "") {
-				alert("로그인을 하여야 현재화면을 볼 수 있습니다\n로그인 페이지 이동")
-				location.href = "${path}/login.do"
-			}		
-			else if (auth!=="인사관리자" && auth!=="관리자"){
-				alert("관리자 or 인사관리자만 접근 가능합니다\n메인 메이지로 이동")
-				location.href = "${path}/index.do"
-			}
+		if (sessId == "") {
+			alert("로그인을 하여야 현재화면을 볼 수 있습니다\n로그인 페이지 이동")
+			location.href = "${path}/login.do"
+		} else if (auth !== "인사관리자" && auth !== "관리자") {
+			alert("관리자 or 인사관리자만 접근 가능합니다\n메인 메이지로 이동")
+			location.href = "${path}/index.do"
+		}
 	})
-	
-		function goDetail(empno){
-		location.href="${path}/empDetail?empno="+empno
+
+	function goDetail(empno) {
+		location.href = "${path}/empDetail?empno=" + empno
 	}
-	
-	function searchEmpList(){
+
+	function searchEmpList() {
 		$.ajax({
-			type: "POST",
+			type : "POST",
 			url : "${path}/empListJson",
 			data : $("#frm01").serialize(),
 			dataType : "json",
-			success : function(elist){
-				console.log(elist)
+			success : function(empPage) {
+				var sch = empPage.sch;
+				$("#totCnt").text("총:" + sch.count + "건")
+				$("[name=curPage]").val(sch.curPage)
+				pageFunc(sch.startBlock, sch.endBlock)
 				var html = ""
-				$(elist).each(function(idx, emp){
-					html += "<tr ondblclick='goDetail("+emp.empno+")'>"
-					html += "<td>"+emp.cnt+"</td>"
-					html += "<td>"+emp.empno+"</td>"
-					html += "<td>"+emp.ename+"</td>"
-					html += "<td>"+emp.dname+"</td>"
-					html += "<td>"+emp.job+"</td>"
-					html += "<td>"+(emp.tel != null ? emp.tel : '')+"</td>"
-					html += "<td>"+emp.email+"</td>"
-					html += "</tr>"
-				})		
+				$(empPage.elist).each(
+						function(idx, emp) {
+							html += "<tr ondblclick='goDetail(" + emp.empno
+									+ ")'>"
+							html += "<td>" + emp.cnt + "</td>"
+							html += "<td>" + emp.empno + "</td>"
+							html += "<td>" + emp.ename + "</td>"
+							html += "<td>"
+									+ (emp.dname != null ? emp.dname : '')
+									+ "</td>"
+							html += "<td>" + emp.job + "</td>"
+							html += "<td>" + (emp.tel != null ? emp.tel : '')
+									+ "</td>"
+							html += "<td style='text-align: left;'>"
+									+ emp.email + "</td>"
+							html += "</tr>"
+						})
 				$("tbody").html(html)
 			},
-			error : function(err){
+			error : function(err) {
 				console.log(err)
 			}
 		})
@@ -131,8 +137,7 @@
 							<form id="frm01"
 								class="d-sm-flex d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 justify-content-between go"
 								method="post">
-
-								<%-- <input type="hidden" name="curPage" value="${sch.curPage}" /> --%>
+								<input type="hidden" name="curPage" value="1" />
 								<div class="input-group">
 									<input id="schEname" type="text"
 										class="form-control bg-light border-0 small"
@@ -147,34 +152,25 @@
 								</div>
 
 								<!-- 보일 페이지수 설정 -->
-								<!-- <div>
-									Topbar Navbar
-									<ul class="navbar-nav ml-auto">
-										<div class="topbar-divider d-none d-sm-block"></div>
-										Nav Item - User Information
-										<div class="input-group">
-											<span class="input-group-text">페이지수</span> <select
-												name="pageSize" class="form-control" aria-label="Page size">
-												<option>3</option>
-												<option>5</option>
-												<option>10</option>
-												<option>20</option>
-											</select>
-										</div>
-									</ul>
-								</div> 
-
+								<div class="input-group mt-3 mb-0">
+									<span class="input-group-text" id="totCnt"></span> <span
+										class="input-group-text">페이지수</span> <select name="pageSize"
+										class="form-control" aria-label="Page size">
+										<option>3</option>
+										<option selected>5</option>
+										<option>10</option>
+										<option>20</option>
+										<option>50</option>
+									</select>
+								</div>
 								<script type="text/javascript">
-									// 선택된 페이지 사이즈를 다음 호출된 페이지에서 출력
-									$("[name=pageSize]").val("${sch.pageSize}")
-									// 페이지크기를 변경했을 때, 선택된 페이지를 초기페이지로 설정..
-									$("[name=pageSize]").change(function(){
+									$("[name=pageSize]").change(function() {
 										$("[name=curPage]").val(1)
-										$("form").submit()
+										$("#schBtn").click()
 									})
 								</script>
-								-->
 							</form>
+
 						</nav>
 
 						<div class="card-body">
@@ -203,37 +199,55 @@
 
 									</tbody>
 								</table>
+								<ul class="pagination ga">
 
-								<%-- 	<ul class="pagination ga">
-									<li class="page-item"><a class="page-link"
-										href="javascript:goPage(${sch.startBlock-1})">Previous</a></li>
-									<c:forEach var="pcnt" begin="${sch.startBlock}"
-										end="${sch.endBlock}">
-										<li class="page-item ${sch.curPage==pcnt?'active':''}"><a
-											class="page-link" href="javascript:goPage(${pcnt})">${pcnt}</a></li>
-									</c:forEach>
-									<li class="page-item"><a class="page-link"
-										href="javascript:goPage(${sch.endBlock+1})">Next</a></li>
 								</ul>
 								<script type="text/javascript">
-									function goPage(pcnt){
-										$("[name=curPage]").val(pcnt)
-										$("form").submit();
+									function pageFunc(stBlk, enBlk) {
+										var curPg = $("[name=curPage]").val()
+										var pageHTML = '<li class="page-item"><a class="page-link" href="javascript:goPage('
+												+ (stBlk - 1)
+												+ ')">Previous</a></li>'
+										for (var pNo = stBlk; pNo <= enBlk; pNo++) {
+											pageHTML += '<li class="page-item '
+													+ (pNo == curPg ? 'active'
+															: '') + '">'
+											pageHTML += '<a class="page-link" href="javascript:goPage('
+													+ pNo
+													+ ')">'
+													+ pNo
+													+ '</a>'
+											pageHTML += '</li>'
+										}
+										pageHTML += '<li class="page-item"><a class="page-link" href="javascript:goPage('
+												+ (enBlk + 1)
+												+ ')">Next</a></li>'
+										console.log(pageHTML)
+										$(".pagination").html(pageHTML)
 									}
-								</script> --%>
+
+									function goPage(no) {
+										//alert(no)
+										$("[name=curPage]").val(no)
+										$("#schBtn").click()
+									}
+								</script>
+
 							</div>
 						</div>
 					</div>
 
 					<div class="my-2"></div>
-					<div class="d-sm-flex justify-content-between">
-						<div></div>
-						<a id=regBtn href=${path}/signUp.do
-							class="btn btn-success btn-icon-split"> <span
-							class="icon text-white-50"> <i class="fas fa-arrow-right"></i>
-						</span> <span class="text">사원등록</span>
-						</a>
-					</div>
+					<c:if test="${empResult.auth == '인사관리자'}">
+						<div class="d-sm-flex justify-content-between">
+							<div></div>
+							<a id=regBtn href=${path}/signUp.do
+								class="btn btn-success btn-icon-split"> <span
+								class="icon text-white-50"> <i class="fas fa-arrow-right"></i>
+							</span> <span class="text">사원등록</span>
+							</a>
+						</div>
+					</c:if>
 					<div class="my-2"></div>
 					<!-- buttons -->
 

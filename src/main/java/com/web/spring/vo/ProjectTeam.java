@@ -2,16 +2,17 @@ package com.web.spring.vo;
 
 public class ProjectTeam {
 	private int teamNo;			//팀 번호
-	private int projNo;			//프로젝트 번호
+	private long prjNo;			//프로젝트 번호
 	private String teamName;	//팀 이름
+	private ProjectBasic projectInfo;
 	
 	public ProjectTeam() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public ProjectTeam(int teamNo, int projNo, String teamName) {
+	public ProjectTeam(int teamNo, long prjNo, String teamName) {
 		this.teamNo = teamNo;
-		this.projNo = projNo;
+		this.prjNo = prjNo;
 		this.teamName = teamName;
 	}
 	
@@ -21,17 +22,23 @@ public class ProjectTeam {
 	public void setTeamNo(int teamNo) {
 		this.teamNo = teamNo;
 	}
-	public int getProjNo() {
-		return projNo;
+	public long getPrjNo() {
+		return prjNo;
 	}
-	public void setProjNo(int projNo) {
-		this.projNo = projNo;
+	public void setPrjNo(long prjNo) {
+		this.prjNo = prjNo;
 	}
 	public String getTeamName() {
 		return teamName;
 	}
 	public void setTeamName(String teamName) {
 		this.teamName = teamName;
+	}
+	public ProjectBasic getProjectInfo() {
+		return projectInfo;
+	}
+	public void setProjectInfo(ProjectBasic projectInfo) {
+		this.projectInfo = projectInfo;
 	}
 	
 }

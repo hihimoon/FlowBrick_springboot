@@ -6,18 +6,24 @@
 	<select id="cntProject" resultType="int" parameterType="projectSch">
 		SELECT COUNT(*)
 		FROM projectbasic
-		WHERE 1=1
-		AND prjname LIKE '%'||#{prjName}||'%'
+		WHERE prjname LIKE '%'||#{prjName}||'%'
 	</select>
 	<select id="projectList" parameterType="projectSch" resultType="projectBasic">
-		SELECT rownum cnt, pb.*
-		FROM projectbasic pb
-		WHERE prjname like '%'||#{prjName}||'%'
+		SELECT *
+		FROM ( SELECT rownum cnt, pb.*
+				FROM (
+					  SELECT *
+					  FROM PROJECTBASIC
+					  WHERE prjname LIKE '%'||#{prjName}||'%'
+					  ORDER BY prjno) pb
+				)
+		WHERE cnt BETWEEN #{startNo} AND #{endNo}
 	</select>
 
 	
 	<insert id="insertProjectBasic" parameterType="projectBasic">
-		INSERT INTO projectbasic VALUES(
+		INSERT INTO projectbasic(prjno, prjname, prjpriority, prjacceptdate, prjbegin, prjend, prjstep) 
+		VALUES(
 			 prj_seq.nextval, #{prjName}, #{prjPriority},
 			 to_date(#{prjAcceptDateStr},'YYYY-MM-DD'),
 			 to_date(#{beginDateStr},'YYYY-MM-DD'), 
@@ -34,15 +40,8 @@
 		
 	<insert id="insertTeamMate" parameterType="int">
 		INSERT INTO teammate VALUES(
-			tm_seq.nextval, team_seq.currval, #{empno}, #{auth}
+			teammem_seq.nextval, team_seq.currval, #{empno}, '팀원', ''
 		)
 	</insert>
 	
-	<!--
-	<select id="tmList" parameterType="">
-		SELECT tm.*, 
-		FROM teammate
-		WHERE 
-	</select>
-	 -->
 </mapper>	

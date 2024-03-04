@@ -12,8 +12,8 @@
 				<div class="col mr-2">
 					<div
 						class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-						다가오는 일정</div>
-					<div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+						남은 프로젝트</div>
+					<div class="h5 mb-0 font-weight-bold text-gray-800">${prj_chart.pj - prj_chart.complete} 개</div>
 				</div>
 				<div class="col-auto">
 					<i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -31,8 +31,9 @@
 				<div class="col mr-2">
 					<div
 						class="text-xs font-weight-bold text-success text-uppercase mb-1">
-						자산관리</div>
-					<div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+						내 프로젝트 총예산</div>
+					<div class="h5 mb-0 font-weight-bold text-gray-800">
+					<fmt:formatNumber value="${prj_HM}" pattern="#,###원" /></div>
 				</div>
 				<div class="col-auto">
 					<i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -80,7 +81,7 @@
 					<div
 						class="text-xs font-weight-bold text-warning text-uppercase mb-1">
 						결제 대기</div>
-					<div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+					<div class="h5 mb-0 font-weight-bold text-gray-800">18건</div>
 				</div>
 				<div class="col-auto">
 					<i class="fas fa-comments fa-2x text-gray-300"></i>

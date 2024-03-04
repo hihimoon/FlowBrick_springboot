@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.web.spring.dao.Dao_Dashboard;
+import com.web.spring.dao.Dao_risk;
+import com.web.spring.vo.RiskSch;
 import com.web.spring.vo.Wizet_PrjList;
 import com.web.spring.vo.Wizet_PrjStep;
 
@@ -17,6 +19,8 @@ import com.web.spring.vo.Wizet_PrjStep;
 public class WebService_dashboard {
 	@Autowired(required = false)
 	private Dao_Dashboard dao;
+	@Autowired(required = false)
+	private Dao_risk Rdao;
 	
 	// 프로젝트 목록
 	public List<Wizet_PrjList> getPrjList(int empno) {
@@ -36,6 +40,14 @@ public class WebService_dashboard {
             long differenceInDays = today.toEpochDay() - localDate.toEpochDay();
             // 계산한 날짜차이를 vo객체에 저장
             w.setDiff(differenceInDays);
+            
+            // 프로젝트의 리스크수를 가져오는 코드
+            RiskSch risk = new RiskSch();
+            risk.setPrjName(w.getPrjName());
+            risk.setRiskName("");
+            risk.setEname("");
+            
+            w.setRisk(Rdao.cntRisk(risk));
 		}
 		return wiz;
 	}
@@ -45,6 +57,19 @@ public class WebService_dashboard {
 		Wizet_PrjStep test = dao.getPrjStep(empno);
 		
 		return test;
-	} 
+	}
+	// 프로젝트 예산
+	public Integer getPrjHM(int empno) {
+		int tmp = dao.getProjH(empno)+dao.getProjM(empno);
+		
+		return tmp;
+	}
+	
+	// 프로젝트 리스크 수
+	public int getCntRisk(RiskSch sch) {
+		
+		return Rdao.cntRisk(sch);
+	}
+	
 	 
 }

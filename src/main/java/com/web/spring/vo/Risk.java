@@ -1,11 +1,17 @@
 package com.web.spring.vo;
 
 import java.util.Date;
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
 
 public class Risk {
+	private int cnt;
 	private int riskNo;
-	private int prjNo;
+	private long prjNo;
+	private String prjName;
 	private int empNo;
+	private String ename;
 	private String riskName;
 	private String riskContent;
 	private String dangerStep;
@@ -14,37 +20,57 @@ public class Risk {
 	private Date completeDate;
 	private String completeDateStr;
 	private String state;
+	private MultipartFile[] reports;
+	private List<String> fnames;
 	
 	public Risk() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	public Risk(int riskNo, int prjNo, int empNo, String riskName, String riskContent, String dangerStep,
-			Date uploadDate, Date completeDate, String state) {
+
+	public Risk(int cnt, int riskNo, long prjNo, String prjName, int empNo, String ename, String riskName,
+			String riskContent, String dangerStep, Date uploadDate, String uploadDateStr, Date completeDate,
+			String completeDateStr, String state) {
 		super();
+		this.cnt = cnt;
 		this.riskNo = riskNo;
 		this.prjNo = prjNo;
+		this.prjName = prjName;
 		this.empNo = empNo;
+		this.ename = ename;
 		this.riskName = riskName;
 		this.riskContent = riskContent;
 		this.dangerStep = dangerStep;
 		this.uploadDate = uploadDate;
+		this.uploadDateStr = uploadDateStr;
 		this.completeDate = completeDate;
+		this.completeDateStr = completeDateStr;
 		this.state = state;
 	}
-	
+
+	public int getCnt() {
+		return cnt;
+	}
+	public void setCnt(int cnt) {
+		this.cnt = cnt;
+	}
 	public int getRiskNo() {
 		return riskNo;
 	}
 	public void setRiskNo(int riskNo) {
 		this.riskNo = riskNo;
 	}
-	public int getPrjNo() {
+	public long getPrjNo() {
 		return prjNo;
 	}
-	public void setPrjNo(int prjNo) {
+	public void setPrjNo(long prjNo) {
 		this.prjNo = prjNo;
+	}
+	public String getPrjName() {
+		return prjName;
+	}
+	public void setPrjName(String prjName) {
+		this.prjName = prjName;
 	}
 	public int getEmpNo() {
 		return empNo;
@@ -52,6 +78,13 @@ public class Risk {
 	public void setEmpNo(int empNo) {
 		this.empNo = empNo;
 	}
+	public String getEname() {
+		return ename;
+	}
+	public void setEname(String ename) {
+		this.ename = ename;
+	}
+
 	public String getRiskName() {
 		return riskName;
 	}
@@ -99,5 +132,19 @@ public class Risk {
 	}
 	public void setCompleteDateStr(String completeDateStr) {
 		this.completeDateStr = completeDateStr;
+	}
+
+	public MultipartFile[] getReports() {
+		return reports;
+	}
+
+	public void setReports(MultipartFile[] reports) {
+		this.reports = reports;
+	}
+	public List<String> getFnames() {
+		return fnames;
+	}
+	public void setFnames(List<String> fnames) {
+		this.fnames = fnames;
 	}
 }

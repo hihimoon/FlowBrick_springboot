@@ -25,7 +25,7 @@ public interface Dao_project {
 	// 프로젝트 팀 등록	
 	public int insertProjectTeam(ProjectTeam ins);
 	// 프로젝트 팀원 등록
-	public int insertTeamMate(TeamMate ins);
+	public int insertTeamMate(int empno);
 	
 	// 사원 리스트
 	@Select("SELECT DISTINCT e.empno, e.ename, e.job, d.dname \r\n"
@@ -35,7 +35,6 @@ public interface Dao_project {
 	public List<TeamEmp> empList();
 	
 	public List<TeamMate> tmList(TeamMate sch);
-	
 	
 }
 
