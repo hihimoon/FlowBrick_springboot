@@ -34,7 +34,7 @@
 
 
 ### 문해인[@hihimoon](https://github.com/hihimoon)
-#### 로그인, 회원관리, 부서관리, 채팅
+#### 관리자페이지 CRUD, 회원가입, 로그인, 마이페이지
 
 
 ### 박성중 [@psj1561](https://github.com/psj1561)
